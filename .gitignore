@@ -1,0 +1,8 @@
+.env
+tmp
+*.txt
+*_templ.go
+node_modules
+package-lock.json
+public/styles.css
+bin

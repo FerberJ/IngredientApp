@@ -1,0 +1,50 @@
+package components
+
+import (
+	"fmt"
+	"gotth/template/backend/models"
+)
+
+templ Ingredients(ingredients []models.Ingredients) {
+	<div class="max-w-sm bg-indigo-50 border rounded-lg shadow-sm border-neutral-200/60">
+		<div class="card card-border bg-base-100 w-96">
+			<div class="card-body">
+				<h2 class="card-title">Rezept abc</h2>
+				<div class="flex flex-column flex-nowrap items-center">
+					<div class="font-bold text-xl font-sans text-end">1</div>
+					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+						</svg>
+					</button>
+					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
+						</svg>
+					</button>
+				</div>
+				<ul>
+					for _, item := range ingredients {
+						<li class="p-2">
+							<div class="flex">
+								<div class="ml-2 font-semibold w-1/2">
+									{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
+								</div>
+								<div class="w-1/2">
+									{ item.Text }
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+				<div class="card-actions justify-center">
+					<script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+					<div data-bring-import data-bring-language="en" data-bring-theme="dark" data-bring-base-quantity="2" style="display:none">
+						<a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}

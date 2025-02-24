@@ -1,0 +1,40 @@
+package components
+
+templ Header(user string, authenticated bool) {
+	<div class="navbar bg-base-100 shadow-sm bg-primary">
+		<div class="navbar-start">
+			<a class="text-xl hidden md:block lg:hidden text-primary-content">🥙 Ingredients App</a>
+		</div>
+		<div class="navbar-center">
+			<a class="text-xl hidden lg:block text-primary-content">🥙 Ingredients App</a>
+		</div>
+		<div class="navbar-end">
+			<input type="text" placeholder="Search" class="input input-bordered w-48 ml-2 mr-2"/>
+			if !authenticated {
+				<a href="/login" class="btn">Login</a>
+			} else {
+				<div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+						<div class="w-10 rounded-full">
+							<img
+								alt="Tailwind CSS Navbar component"
+								src={ user }
+							/>
+						</div>
+					</div>
+					<ul
+						tabindex="0"
+						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+					>
+						<li>
+							<a href="/logout">
+								<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"></path></svg>
+								Logout
+							</a>
+						</li>
+					</ul>
+				</div>
+			}
+		</div>
+	</div>
+}

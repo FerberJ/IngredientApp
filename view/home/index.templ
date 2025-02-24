@@ -1,0 +1,16 @@
+package home
+
+import (
+	"gotth/template/view/components"
+	"gotth/template/view/layouts"
+)
+
+templ Index(user string, authenticated bool) {
+	@layouts.Base() {
+		
+		@components.Header(user, authenticated)
+		<div hx-get="/recepies" hx-trigger="load" hx-swap="outerHTML">
+			<!--Recepies-->
+		</div>
+	}
+}

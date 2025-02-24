@@ -1,0 +1,42 @@
+package components
+
+import "gotth/template/backend/models"
+
+templ RecipesList(recipes []models.RecipeCard) {
+	{{keywords := []string{}}}
+	for _, item := range keywords {
+		<p>{item}</p>
+	}
+	<div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+		for _, item := range recipes {
+			<div class="card bg-base-100 shadow-sm m-2">
+				<figure class="relative overflow-hidden cursor-pointer">
+					<img
+						src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
+						alt="Food"
+						class="object-cover w-full h-full transition-transform duration-500 transform hover:scale-110"
+					/>
+				</figure>
+				<div class="card-body">
+					<div>
+						<div class="flex items-center justify-between">
+							<h2 class="card-title">{ item.Name }</h2>
+							<button class="btn btn-square btn-primary btn-sm">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+									<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+								</svg>
+							</button>
+						</div>
+						<p class="italic">{ item.User }</p>
+						<p class="line-clamp-2 overflow-hidden text-ellipsis">{ item.Description }</p>
+					</div>
+					<div class="card-actions justify-start">
+						for _, keyword := range item.Keywords {
+							<div class="btn btn-accent btn-xs">{ keyword }</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+}
