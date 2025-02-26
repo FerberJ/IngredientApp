@@ -8,7 +8,6 @@ import (
 )
 
 func HandleHome(w http.ResponseWriter, r *http.Request) {
-	//.SetCookie(w, sessions.NewCookie(s.Name(), cookieValue, s.Options))
 	user, err := auth.GetUser(w, r)
 	if err != nil {
 		home.Index("", false).Render(r.Context(), w)

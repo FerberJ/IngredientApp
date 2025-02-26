@@ -21,6 +21,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	db.NewRedisProvider("localhost:6379", "")
+
 	auth.InitCasdoor()
 	store.InitStore()
 
@@ -37,12 +39,14 @@ func main() {
 	router.Get("/", handlers.HandleHome)
 	router.Get("/login", handlers.HandleLogin)
 	router.Get("/logout", handlers.HandleLogout)
-	router.Get("/recepies", handlers.HandeleRecipes)
+	router.Get("/recipies", handlers.HandleRecipes)
 	router.Get("/callback", handlers.HandleLoginCallback)
+	router.Put("/addlistbadges/{keyword}", handlers.HandleAddClosableBadge)
+	router.Put("/removelistbadges/{keyword}", handlers.HandleRemoveClosableBadge)
+	router.Put("/removelistbadges", handlers.HandleRemoveAllClosableBadge)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)
 
 	http.ListenAndServe(listenAddr, router)
-	fmt.Println("hello World!!")
 }

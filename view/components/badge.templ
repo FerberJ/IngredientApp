@@ -1,0 +1,20 @@
+package components
+
+templ ClosableBadge(name string) {
+	if name == "" {
+		<button class="btn btn-circle btn-xs btn-accent ml-2 my-2" hx-put={ "/removelistbadges" } hx-swap="innerHTML" hx-target="#main" hx-trigger="click">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+			</svg>
+		</button>
+	} else {
+		<span class="badge badge-accent ml-2 my-2">
+			<button class="btn btn-circle btn-xs btn-accent" hx-put={ "/removelistbadges/" + name } hx-swap="innerHTML" hx-target="#main" hx-trigger="click">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+				</svg>
+			</button>
+			{ name }
+		</span>
+	}
+}

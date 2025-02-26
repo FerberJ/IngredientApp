@@ -27,15 +27,15 @@ func NewMongoProvider(uri, dbName string) (*MongoProvider, error) {
 	}
 
 	db := client.Database(dbName)
-	setProvider(&MongoProvider{Client: client, Database: db})
+	setMongoProvider(&MongoProvider{Client: client, Database: db})
 	return mongoProvider, nil
 }
 
-func setProvider(provider *MongoProvider) {
+func setMongoProvider(provider *MongoProvider) {
 	mongoProvider = provider
 }
 
-func GetProvider() *MongoProvider {
+func GetMongoProvider() *MongoProvider {
 	return mongoProvider
 }
 

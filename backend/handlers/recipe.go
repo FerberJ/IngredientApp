@@ -5,15 +5,17 @@ import (
 	"gotth/template/backend/db"
 	"gotth/template/backend/models"
 	"gotth/template/backend/repository"
+	"gotth/template/backend/store"
+	"gotth/template/backend/utils"
 	"gotth/template/view/components"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func HandeleRecipes(w http.ResponseWriter, r *http.Request) {
+func HandleRecipes(w http.ResponseWriter, r *http.Request) {
 	var filter bson.M
-	recipeRepository := repository.NewRecipeRepository(db.GetProvider())
+	recipeRepository := repository.NewRecipeRepository(db.GetMongoProvider())
 	user, err := auth.GetUser(w, r)
 	if err != nil {
 		filter = bson.M{"private": false}
@@ -38,5 +40,24 @@ func HandeleRecipes(w http.ResponseWriter, r *http.Request) {
 		recipes = append(recipes, recipe)
 	}
 
-	components.RecipesList(recipes).Render(r.Context(), w)
+	var valSlice []string
+	s := store.GetStore()
+	val, err := s.GetValue("badgeList", w, r)
+	if err == nil && val != nil {
+		valSlice = val.([]string)
+	}
+
+	var filteredRecipes []models.RecipeCard
+
+	if len(valSlice) == 0 {
+		filteredRecipes = recipes
+	} else {
+		for _, rec := range recipes {
+			if utils.ContainsAllKeywords(rec.Keywords, valSlice) {
+				filteredRecipes = append(filteredRecipes, rec)
+			}
+		}
+	}
+
+	components.RecipesList(filteredRecipes, valSlice).Render(r.Context(), w)
 }

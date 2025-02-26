@@ -9,8 +9,8 @@ templ Index(user string, authenticated bool) {
 	@layouts.Base() {
 		
 		@components.Header(user, authenticated)
-		<div hx-get="/recepies" hx-trigger="load" hx-swap="outerHTML">
-			<!--Recepies-->
+		<div hx-get="/recipies" hx-trigger="load" hx-swap="innerHTML" id="main">
+			<!--recipies-->
 		</div>
 	}
 }

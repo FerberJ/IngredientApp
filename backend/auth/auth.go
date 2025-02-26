@@ -63,7 +63,7 @@ ow==
 
 func GetUser(w http.ResponseWriter, r *http.Request) (*casdoorsdk.Claims, error) {
 	store := store.GetStore()
-	session, err := store.Get(r, "session")
+	session, err := store.GetToken(r)
 	if err != nil {
 		return nil, err
 	}
