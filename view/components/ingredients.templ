@@ -3,15 +3,17 @@ package components
 import (
 	"fmt"
 	"gotth/template/backend/models"
+	"strconv"
 )
 
-templ Ingredients(ingredients []models.Ingredients) {
+
+
+templ Ingredients(recipe models.Recipe) {
 	<div class="max-w-sm bg-indigo-50 border rounded-lg shadow-sm border-neutral-200/60">
 		<div class="card card-border bg-base-100 w-96">
 			<div class="card-body">
-				<h2 class="card-title">Rezept abc</h2>
 				<div class="flex flex-column flex-nowrap items-center">
-					<div class="font-bold text-xl font-sans text-end">1</div>
+					<div class="font-bold text-xl font-sans text-end">{ strconv.Itoa(recipe.Nutrition.ServingSize)}</div>
 					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
@@ -24,7 +26,7 @@ templ Ingredients(ingredients []models.Ingredients) {
 					</button>
 				</div>
 				<ul>
-					for _, item := range ingredients {
+					for _, item := range recipe.Ingredients {
 						<li class="p-2">
 							<div class="flex">
 								<div class="ml-2 font-semibold w-1/2">

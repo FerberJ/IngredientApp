@@ -57,8 +57,8 @@ type Recipe struct {
 	PrepTime           string          `json:"prepTime"`
 	CookTime           string          `json:"cookTime"`
 	TotalTime          string          `json:"totalTime"`
-	Ingredients        []Ingredients   `json:"ingredients"`
-	Instructions       []Instructions  `json:"instructions"`
+	Ingredients        []Ingredient    `json:"ingredients"`
+	Instructions       []Instruction   `json:"instructions"`
 	Nutrition          NutritionInfo   `json:"nutrition"`
 	AggregateRating    AggregateRating `json:"aggregateRating"`
 	Cuisine            string          `json:"cuisine"`
@@ -71,15 +71,16 @@ type Name struct {
 	Name string `json:"name"`
 }
 
-type Ingredients struct {
+type Ingredient struct {
 	Text   string `json:"text"`
 	Amount uint   `json:"amount"`
 	Unit   string `json:"unit"`
 }
 
-type Instructions struct {
-	Text  string `json:"text"`
-	Image string `json:"image"`
+type Instruction struct {
+	Header string `json:"header"`
+	Text   string `json:"text"`
+	Image  string `json:"image"`
 }
 
 // NutritionInfo represents nutritional information as part of the recipe.
@@ -88,7 +89,7 @@ type NutritionInfo struct {
 	FatContent          string `json:"fatContent"`
 	CarbohydrateContent string `json:"carbohydrateContent"`
 	ProteinContent      string `json:"proteinContent"`
-	ServingSize         string `json:"servingSize"`
+	ServingSize         int    `json:"servingSize"`
 }
 
 // AggregateRating holds information about the recipe's rating.
@@ -111,7 +112,7 @@ func GetRecipe() Recipe {
 		PrepTime:       "PT15M",
 		CookTime:       "PT45M",
 		TotalTime:      "PT1H",
-		Ingredients: []Ingredients{
+		Ingredients: []Ingredient{
 			{
 				Text:   "Spaghetti",
 				Amount: 300,
@@ -132,7 +133,7 @@ func GetRecipe() Recipe {
 				Amount: 3,
 			},
 		},
-		Instructions: []Instructions{
+		Instructions: []Instruction{
 			{
 				Text:  "Boil water for spaghetti.",
 				Image: "",
@@ -155,7 +156,7 @@ func GetRecipe() Recipe {
 			FatContent:          "20g",
 			CarbohydrateContent: "75g",
 			ProteinContent:      "30g",
-			ServingSize:         "1 plate",
+			ServingSize:         1,
 		},
 		AggregateRating: AggregateRating{
 			RatingValue: 4.5,

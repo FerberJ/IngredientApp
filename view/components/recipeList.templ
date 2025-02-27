@@ -2,7 +2,6 @@ package components
 
 import (
 	"gotth/template/backend/models"
-	"strconv"
 )
 
 templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
@@ -30,14 +29,13 @@ templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
 					<div>
 						<div class="flex items-center justify-between">
 							<h2 class="card-title">{ item.Name }</h2>
-							<button class="btn btn-square btn-primary btn-sm">
+							<button class="btn btn-square btn-primary btn-sm" href="" hx-get={ "/redirect/recipe/" + item.ID } hx-swap="none">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
 									<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
 								</svg>
 							</button>
 						</div>
 						<p class="line-clamp-1 overflow-hidden text-ellipsis italic">{ item.User }</p>
-						<p class="line-clamp-1 overflow-hidden text-ellipsis italic">{ strconv.FormatBool(item.Private) }</p>
 						<p class="line-clamp-2 overflow-hidden text-ellipsis">{ item.Description }</p>
 					</div>
 					<div class="card-actions justify-start">

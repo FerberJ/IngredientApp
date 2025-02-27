@@ -1,0 +1,58 @@
+package components
+
+import (
+	"fmt"
+	"gotth/template/backend/models"
+	"strconv"
+)
+
+templ Recipe(recipe models.Recipe) {
+    <div class="flex flex-col items-center w-full">
+		<div w-96>
+			<p class="text-4xl font-bold my-4">{ recipe.Name }</p>
+			<p class="text">{ recipe.Description }</p>
+			<p class="text-xs">submited by { recipe.User }</p>
+			<img
+				src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
+				alt="Food"
+				class="object-cover max-w-96 transition-transform"
+			/>
+			<p>{ recipe.PrepTime }</p>
+			<p>{ recipe.CookTime }</p>
+			<p>{ recipe.TotalTime }</p>
+			<div class="flex flex-column flex-nowrap items-center">
+				<div class="font-bold text-xl font-sans text-end">{ strconv.Itoa(recipe.Nutrition.ServingSize) }</div>
+				<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+					</svg>
+				</button>
+				<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
+					</svg>
+				</button>
+			</div>
+			<ul>
+				for _, item := range recipe.Ingredients {
+					<li class="p-2">
+						<div class="flex">
+							<div class="ml-2 font-semibold w-1/2">
+								{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
+							</div>
+							<div class="w-1/2">
+								{ item.Text }
+							</div>
+						</div>
+					</li>
+				}
+			</ul>
+			for i, instruction := range recipe.Instructions {
+				<div class="max-w-120">
+					<p class="text-lg font-bold">{ strconv.Itoa(i+1) }. { instruction.Header }</p>
+					<p class="text-left">{ instruction.Text }</p>
+				</div>
+			}
+		</div>
+	</div>
+}

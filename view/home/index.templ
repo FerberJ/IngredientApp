@@ -3,14 +3,22 @@ package home
 import (
 	"gotth/template/view/components"
 	"gotth/template/view/layouts"
+	"gotth/template/backend/models"
 )
 
-templ Index(user string, authenticated bool) {
+templ ListIndex(user string, authenticated bool) {
 	@layouts.Base() {
-		
 		@components.Header(user, authenticated)
-		<div hx-get="/recipies" hx-trigger="load" hx-swap="innerHTML" id="main">
-			<!--recipies-->
+		<div hx-get="/recipes" hx-trigger="load" hx-swap="innerHTML" id="main">
+			<!--recipes-->
 		</div>
+	}
+}
+
+
+templ RecipeIndex(user string, authenticated bool, recipe models.Recipe) {
+	@layouts.Base() {
+		@components.Header(user, authenticated)
+		@components.Recipe(recipe)
 	}
 }

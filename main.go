@@ -36,14 +36,18 @@ func main() {
 	router := chi.NewMux()
 
 	router.Handle("/*", public())
-	router.Get("/", handlers.HandleHome)
+	router.Get("/", handlers.HandleListPage)
+	//router.Get("/{id}", handlers.HandleRecipe)
 	router.Get("/login", handlers.HandleLogin)
 	router.Get("/logout", handlers.HandleLogout)
-	router.Get("/recipies", handlers.HandleRecipes)
+	router.Get("/recipes", handlers.HandleRecipes)
 	router.Get("/callback", handlers.HandleLoginCallback)
 	router.Put("/addlistbadges/{keyword}", handlers.HandleAddClosableBadge)
 	router.Put("/removelistbadges/{keyword}", handlers.HandleRemoveClosableBadge)
 	router.Put("/removelistbadges", handlers.HandleRemoveAllClosableBadge)
+	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
+
+	router.Get("/recipe/{id}", handlers.HandleRecipePage)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)

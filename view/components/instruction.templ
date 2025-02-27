@@ -1,0 +1,8 @@
+package components
+
+import "gotth/template/backend/models"
+
+templ Instruction(number string, instruction models.Instruction) {
+    <p class="text-lg font-bold">{number}. {instruction.Header}</p>
+    <p class="text-center">{instruction.Text}</p>
+}
