@@ -8,6 +8,7 @@ import (
 	"gotth/template/backend/repository"
 	"gotth/template/view/home"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,6 +32,8 @@ func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
 	// Get Recipe
 	var filter bson.M
 	recipeID := chi.URLParam(r, "id")
+	servingSiceStr := r.URL.Query().Get("serving")
+
 	recipeIDObjectID, err := primitive.ObjectIDFromHex(recipeID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -66,10 +69,28 @@ func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
 	data, _ := bson.Marshal(res)
 	bson.Unmarshal(data, &recipe)
 
+	servingSice := recipe.Nutrition.ServingSize
+	if servingSiceStr != "" {
+		num, err := strconv.ParseInt(servingSiceStr, 10, 64)
+		if err == nil {
+			servingSice = int(num)
+		}
+	}
+
+	ingredients := make([]models.Ingredient, 0, len(recipe.Ingredients))
+	devider := float64(recipe.Nutrition.ServingSize) / float64(servingSice)
+	for _, ingredient := range recipe.Ingredients {
+		ingre := ingredient
+		ingre.Amount = ingre.Amount / devider
+		ingredients = append(ingredients, ingre)
+	}
+
+	recipe.Ingredients = ingredients
+
 	avatar := ""
 	if user != nil {
 		avatar = user.Avatar
 	}
 
-	home.RecipeIndex(avatar, authenticated, recipe).Render(r.Context(), w)
+	home.RecipeIndex(avatar, authenticated, recipe, uint(servingSice)).Render(r.Context(), w)
 }

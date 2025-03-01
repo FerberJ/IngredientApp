@@ -37,7 +37,6 @@ func main() {
 
 	router.Handle("/*", public())
 	router.Get("/", handlers.HandleListPage)
-	//router.Get("/{id}", handlers.HandleRecipe)
 	router.Get("/login", handlers.HandleLogin)
 	router.Get("/logout", handlers.HandleLogout)
 	router.Get("/recipes", handlers.HandleRecipes)
@@ -45,7 +44,9 @@ func main() {
 	router.Put("/addlistbadges/{keyword}", handlers.HandleAddClosableBadge)
 	router.Put("/removelistbadges/{keyword}", handlers.HandleRemoveClosableBadge)
 	router.Put("/removelistbadges", handlers.HandleRemoveAllClosableBadge)
+
 	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
+	router.Get("/redirect/home", handlers.RedirectToHome)
 
 	router.Get("/recipe/{id}", handlers.HandleRecipePage)
 

@@ -16,9 +16,9 @@ templ ListIndex(user string, authenticated bool) {
 }
 
 
-templ RecipeIndex(user string, authenticated bool, recipe models.Recipe) {
+templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint) {
 	@layouts.Base() {
 		@components.Header(user, authenticated)
-		@components.Recipe(recipe)
+		@components.Recipe(recipe, serving)
 	}
 }

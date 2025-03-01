@@ -72,9 +72,9 @@ type Name struct {
 }
 
 type Ingredient struct {
-	Text   string `json:"text"`
-	Amount uint   `json:"amount"`
-	Unit   string `json:"unit"`
+	Text   string  `json:"text"`
+	Amount float64 `json:"amount"`
+	Unit   string  `json:"unit"`
 }
 
 type Instruction struct {

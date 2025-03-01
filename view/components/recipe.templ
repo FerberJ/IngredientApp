@@ -1,4 +1,4 @@
-package components
+package components 
 
 import (
 	"fmt"
@@ -6,53 +6,164 @@ import (
 	"strconv"
 )
 
-templ Recipe(recipe models.Recipe) {
-    <div class="flex flex-col items-center w-full">
-		<div w-96>
-			<p class="text-4xl font-bold my-4">{ recipe.Name }</p>
-			<p class="text">{ recipe.Description }</p>
-			<p class="text-xs">submited by { recipe.User }</p>
-			<img
-				src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
-				alt="Food"
-				class="object-cover max-w-96 transition-transform"
-			/>
-			<p>{ recipe.PrepTime }</p>
-			<p>{ recipe.CookTime }</p>
-			<p>{ recipe.TotalTime }</p>
-			<div class="flex flex-column flex-nowrap items-center">
-				<div class="font-bold text-xl font-sans text-end">{ strconv.Itoa(recipe.Nutrition.ServingSize) }</div>
-				<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-					</svg>
-				</button>
-				<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
-					</svg>
-				</button>
+templ Recipe(recipe models.Recipe, serving uint) {
+	<div itemscope itemtype="http://schema.org/Recipe" class="flex flex-col items-center w-full">
+		<!-- Optional but recommended structured data -->
+		if recipe.RecipeCategory != "" {
+			<meta itemprop="recipeCategory" content={ recipe.RecipeCategory }/>
+		}
+		if recipe.Cuisine != "" {
+			<meta itemprop="recipeCuisine" content={ recipe.Cuisine }/>
+		}
+		<img
+			itemprop="image"
+			src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
+			alt="Food"
+			class="w-full h-110 object-cover"
+			style="object-position: center 50%;"
+		/>
+		<div class="flex w-full justify-center">
+			<div id="curved-corner-bottomright" class="h-20 -mt-25 hidden sm:block"></div>
+			<div class="hidden sm:block h-20 w-10 -mt-20 bg-white rounded-tl-[2vw]"></div>
+			<div class="flex -mt-20 w-full sm:w-96 justify-center bg-white">
+				<h1 class="text-4xl font-bold my-4" itemprop="name">{ recipe.Name }</h1>
 			</div>
-			<ul>
-				for _, item := range recipe.Ingredients {
-					<li class="p-2">
-						<div class="flex">
-							<div class="ml-2 font-semibold w-1/2">
-								{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
-							</div>
-							<div class="w-1/2">
-								{ item.Text }
+			<div class="hidden sm:block h-20 w-10 -mt-20 rounded-tr-[2vw] bg-white"></div>
+			<div id="curved-corner-bottomleft" class="h-20 -mt-25 hidden sm:block"></div>
+		</div>
+		<div class="w-full grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-1 lg:grid-cols-2">
+			<!--Descirption & Time-->
+			<div class="w-full flex justify-center lg:col-span-2">
+				<div class="">
+					<div>
+						<div class="badge badge-primary mb-4">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+							<div>
+								{ recipe.TotalTime }
 							</div>
 						</div>
-					</li>
-				}
-			</ul>
-			for i, instruction := range recipe.Instructions {
-				<div class="max-w-120">
-					<p class="text-lg font-bold">{ strconv.Itoa(i+1) }. { instruction.Header }</p>
-					<p class="text-left">{ instruction.Text }</p>
+						<!-- Description -->
+						<p class="text" itemprop="description">{ recipe.Description }</p>
+						<!-- Author -->
+						<p class="text-xs">submitted by <span itemprop="author">{ recipe.User }</span></p>
+					</div>
+					<!-- Time Information -->
+					<div class="my-4">
+						<meta itemprop="prepTime" content={ recipe.PrepTime }/>
+						<div class="flex items-center">
+							<div class="font-bold w-1/2">
+								Prep Time:
+							</div>
+							<div class="badge badge-primary flex items-center">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+								</svg>
+								<div itemprop="totalTime">
+									{ recipe.PrepTime }
+								</div>
+							</div>
+						</div>
+						<meta itemprop="cookTime" content={ recipe.CookTime }/>
+						<div class="flex items-center mt-4">
+							<div class="font-bold w-1/2">
+								Cook Time:
+							</div>
+							<div class="badge badge-primary flex items-center">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+								</svg>
+								<div itemprop="totalTime">
+									{ recipe.CookTime }
+								</div>
+							</div>
+						</div>
+						<meta itemprop="totalTime" content={ recipe.TotalTime }/>
+					</div>
 				</div>
-			}
+			</div>
+			<!-- Ingredients & Servings & bring -->
+			<div class="mb-4 bg-blue-100">
+				<!-- Yield / Servings -->
+				<div class="flex flex-column flex-nowrap items-center mb-4 ">
+					<div class="font-bold text-xl font-sans text-end" itemprop="recipeYield">{ strconv.Itoa(int(serving)) }</div>
+					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+						</svg>
+					</button>
+					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
+						</svg>
+					</button>
+				</div>
+				<h2 class="text-2xl font-bold mb-2">Ingredients</h2>
+				<ul>
+					for _, item := range recipe.Ingredients {
+						<li>
+							<div itemprop="recipeIngredient" class="flex">
+								<div class="ml-2 font-semibold w-1/2">
+									{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
+								</div>
+								<div class="w-1/2">
+									{ item.Text }
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+				<!-- Bring Integration -->
+				<div class="my-4 flex w-full justify-center">
+					<script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+					<div data-bring-import="https://ferber.io" data-bring-language="en" style="display:none"></div>
+					<a href="https://www.getbring.com"></a>
+				</div>
+			</div>
+			<!-- Instructions -->
+			<div class="mb-4 bg-red-100">
+				<h2 class="text-2xl font-bold mb-2">Instructions</h2>
+				for i, instruction := range recipe.Instructions {
+					<div class="max-w-120 mb-4" itemprop="recipeInstructions" itemscope itemtype="http://schema.org/HowToStep">
+						<meta itemprop="position" content={ strconv.Itoa(i + 1) }/>
+						<p class="text-lg font-bold" itemprop="name">{ strconv.Itoa(i+1) }. { instruction.Header }</p>
+						<p class="text-left" itemprop="text">{ instruction.Text }</p>
+					</div>
+				}
+			</div>
 		</div>
 	</div>
+	<style>
+		#curved-corner-bottomleft,
+		#curved-corner-bottomright {
+		width: 100px;
+		height: 100px;
+		overflow: hidden;
+		position: relative;
+		}
+
+
+		#curved-corner-bottomleft:before {
+			content: "";
+			display: block;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			border-radius: 50%;
+			bottom: 0;
+			left: 0;
+			box-shadow: -50px 50px 0 0 white;
+		}
+
+		#curved-corner-bottomright:before {
+		content: "";
+		display: block;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		border-radius: 50%;
+		bottom: 0;
+		right: 0;
+		box-shadow: 50px 50px 0 0 white;
+		}
+	</style>
 }
