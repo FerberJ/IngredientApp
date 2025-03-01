@@ -1,8 +1,8 @@
 package components 
 
 import (
-	"fmt"
 	"gotth/template/backend/models"
+	"gotth/template/view/components/recipe"
 	"strconv"
 )
 
@@ -25,7 +25,7 @@ templ Recipe(recipe models.Recipe, serving uint) {
 		<div class="flex w-full justify-center">
 			<div id="curved-corner-bottomright" class="h-20 -mt-25 hidden sm:block"></div>
 			<div class="hidden sm:block h-20 w-10 -mt-20 bg-white rounded-tl-[2vw]"></div>
-			<div class="flex -mt-20 w-full sm:w-96 justify-center bg-white">
+			<div class="flex -mt-20 w-full sm:w-120 justify-center bg-white rounded-tl-[2vw] sm:rounded-tl-[0vw] rounded-tr-[2vw] sm:rounded-tr-[0vw]">
 				<h1 class="text-4xl font-bold my-4" itemprop="name">{ recipe.Name }</h1>
 			</div>
 			<div class="hidden sm:block h-20 w-10 -mt-20 rounded-tr-[2vw] bg-white"></div>
@@ -33,100 +33,34 @@ templ Recipe(recipe models.Recipe, serving uint) {
 		</div>
 		<div class="w-full grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-1 lg:grid-cols-2">
 			<!--Descirption & Time-->
-			<div class="w-full flex justify-center lg:col-span-2">
-				<div class="">
-					<div>
-						<div class="badge badge-primary mb-4">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
-							<div>
-								{ recipe.TotalTime }
-							</div>
-						</div>
-						<!-- Description -->
-						<p class="text" itemprop="description">{ recipe.Description }</p>
-						<!-- Author -->
-						<p class="text-xs">submitted by <span itemprop="author">{ recipe.User }</span></p>
-					</div>
-					<!-- Time Information -->
-					<div class="my-4">
-						<meta itemprop="prepTime" content={ recipe.PrepTime }/>
-						<div class="flex items-center">
-							<div class="font-bold w-1/2">
-								Prep Time:
-							</div>
-							<div class="badge badge-primary flex items-center">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-								</svg>
-								<div itemprop="totalTime">
-									{ recipe.PrepTime }
-								</div>
-							</div>
-						</div>
-						<meta itemprop="cookTime" content={ recipe.CookTime }/>
-						<div class="flex items-center mt-4">
-							<div class="font-bold w-1/2">
-								Cook Time:
-							</div>
-							<div class="badge badge-primary flex items-center">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-								</svg>
-								<div itemprop="totalTime">
-									{ recipe.CookTime }
-								</div>
-							</div>
-						</div>
-						<meta itemprop="totalTime" content={ recipe.TotalTime }/>
-					</div>
-				</div>
+			<div class="mx-4 w-full flex justify-center lg:col-span-2">
+				@recipe_components.Description(recipe)
 			</div>
 			<!-- Ingredients & Servings & bring -->
-			<div class="mb-4 bg-blue-100">
-				<!-- Yield / Servings -->
-				<div class="flex flex-column flex-nowrap items-center mb-4 ">
-					<div class="font-bold text-xl font-sans text-end" itemprop="recipeYield">{ strconv.Itoa(int(serving)) }</div>
-					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-						</svg>
-					</button>
-					<button class="btn btn-circle btn-xs btn-outline btn-primary ml-2">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
-						</svg>
-					</button>
-				</div>
-				<h2 class="text-2xl font-bold mb-2">Ingredients</h2>
-				<ul>
-					for _, item := range recipe.Ingredients {
-						<li>
-							<div itemprop="recipeIngredient" class="flex">
-								<div class="ml-2 font-semibold w-1/2">
-									{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
-								</div>
-								<div class="w-1/2">
-									{ item.Text }
-								</div>
-							</div>
-						</li>
-					}
-				</ul>
-				<!-- Bring Integration -->
-				<div class="my-4 flex w-full justify-center">
-					<script async="async" src="//platform.getbring.com/widgets/import.js"></script>
-					<div data-bring-import="https://ferber.io" data-bring-language="en" style="display:none"></div>
-					<a href="https://www.getbring.com"></a>
+			<div class="mb-4 flex justify-center items-start">
+				<div class="card bg-base-300 w-96 shadow-sm">
+					<div class="card-body">
+						<h2 class="card-title">Ingredients</h2>
+						<div id="servings">
+							@recipe_components.Servings(recipe.Ingredients, serving, recipe.ID)
+						</div>
+						<!-- Bring Integration -->
+						<div class="my-4 flex w-full justify-center">
+							<script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+							<div data-bring-import="https://ferber.io" data-bring-language="en" style="display:none"></div>
+							<a href="https://www.getbring.com"></a>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- Instructions -->
-			<div class="mb-4 bg-red-100">
-				<h2 class="text-2xl font-bold mb-2">Instructions</h2>
+			<div class="mb-4 ml-0 mr-0 xs:mr-20 sm:mr-20 lg:mr-10 xs:ml-20 sm:ml-20 lg:ml-0">
+				<h2 class="text-2xl font-bold mb-2 text-center xs:text-center sm:text-center lg:text-left">Instructions</h2>
 				for i, instruction := range recipe.Instructions {
-					<div class="max-w-120 mb-4" itemprop="recipeInstructions" itemscope itemtype="http://schema.org/HowToStep">
+					<div class="max-w mb-4" itemprop="recipeInstructions" itemscope itemtype="http://schema.org/HowToStep">
 						<meta itemprop="position" content={ strconv.Itoa(i + 1) }/>
-						<p class="text-lg font-bold" itemprop="name">{ strconv.Itoa(i+1) }. { instruction.Header }</p>
-						<p class="text-left" itemprop="text">{ instruction.Text }</p>
+						<p class="mx-4 text-lg font-bold text-center xs:text-center sm:text-center lg:text-left" itemprop="name">{ strconv.Itoa(i+1) }. { instruction.Header }</p>
+						<p class="mx-4 text-justify xs:text-justify sm:text-justify lg:text-left" itemprop="text">{ instruction.Text }</p>
 					</div>
 				}
 			</div>

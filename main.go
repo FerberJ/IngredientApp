@@ -49,6 +49,7 @@ func main() {
 	router.Get("/redirect/home", handlers.RedirectToHome)
 
 	router.Get("/recipe/{id}", handlers.HandleRecipePage)
+	router.Get("/recipe/{id}/servings/{count}", handlers.HandleServings)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)

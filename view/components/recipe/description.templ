@@ -1,0 +1,52 @@
+package recipe_components
+
+import "gotth/template/backend/models"
+
+templ Description(recipe models.Recipe) {
+	<div>
+		<div>
+			<div class="badge badge-primary mb-4">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+				<div>
+					{ recipe.TotalTime }
+				</div>
+			</div>
+			<!-- Description -->
+			<p class="text" itemprop="description">{ recipe.Description }</p>
+			<!-- Author -->
+			<p class="text-xs">submitted by <span itemprop="author">{ recipe.User }</span></p>
+		</div>
+		<!-- Time Information -->
+		<div class="my-4">
+			<meta itemprop="prepTime" content={ recipe.PrepTime }/>
+			<div class="flex items-center">
+				<div class="font-bold w-1/2">
+					Prep Time:
+				</div>
+				<div class="badge badge-primary flex items-center">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+					</svg>
+					<div itemprop="totalTime">
+						{ recipe.PrepTime }
+					</div>
+				</div>
+			</div>
+			<meta itemprop="cookTime" content={ recipe.CookTime }/>
+			<div class="flex items-center mt-4">
+				<div class="font-bold w-1/2">
+					Cook Time:
+				</div>
+				<div class="badge badge-primary flex items-center">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+					</svg>
+					<div itemprop="totalTime">
+						{ recipe.CookTime }
+					</div>
+				</div>
+			</div>
+			<meta itemprop="totalTime" content={ recipe.TotalTime }/>
+		</div>
+	</div>
+}
