@@ -14,7 +14,7 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	c := auth.GetCasdoor()
-	baseAddress := "http://localhost:3000"
+	baseAddress := "http://localhost:3000" // TODO: add to config
 	redirect := baseAddress + "/callback"
 	loginUrl := c.Client.GetSigninUrl(redirect)
 	http.Redirect(w, r, loginUrl, http.StatusFound)
@@ -22,7 +22,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	c := auth.GetCasdoor()
-	baseAddress := "http://localhost:3000"
+	baseAddress := "http://localhost:3000" // TODO: add to config
 	redirect := baseAddress + "/callback"
 	code := r.URL.Query().Get("code")
 	if code == "" {

@@ -35,20 +35,27 @@ func main() {
 
 	router := chi.NewMux()
 
+	// Public Files
 	router.Handle("/*", public())
-	router.Get("/", handlers.HandleListPage)
+
+	// Endpoints for Login / Logout
 	router.Get("/login", handlers.HandleLogin)
 	router.Get("/logout", handlers.HandleLogout)
-	router.Get("/recipes", handlers.HandleRecipes)
 	router.Get("/callback", handlers.HandleLoginCallback)
+
+	// Redirect to new paths
+	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
+	router.Get("/redirect/home", handlers.RedirectToHome)
+
+	// Page for Recipe List
+	router.Get("/", handlers.HandleListPage) // Recipe List Page
+	router.Get("/recipes", handlers.HandleRecipes)
 	router.Put("/addlistbadges/{keyword}", handlers.HandleAddClosableBadge)
 	router.Put("/removelistbadges/{keyword}", handlers.HandleRemoveClosableBadge)
 	router.Put("/removelistbadges", handlers.HandleRemoveAllClosableBadge)
 
-	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
-	router.Get("/redirect/home", handlers.RedirectToHome)
-
-	router.Get("/recipe/{id}", handlers.HandleRecipePage)
+	// Page for showing a single Recipe
+	router.Get("/recipe/{id}", handlers.HandleRecipePage) // Recipe Page
 	router.Get("/recipe/{id}/servings/{count}", handlers.HandleServings)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")

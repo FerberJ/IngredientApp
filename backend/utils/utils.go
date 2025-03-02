@@ -15,14 +15,14 @@ func Contains(slice []string, str string) bool {
 	return false
 }
 
-func ContainsAllKeywords(keywords, valSlice []string) bool {
+func ContainsAllKeywords(keywords, selectedFilter []string) bool {
 	keywordMap := make(map[string]bool)
 
 	for _, tag := range keywords {
 		keywordMap[tag] = true
 	}
 
-	for _, val := range valSlice {
+	for _, val := range selectedFilter {
 		if !keywordMap[val] {
 			return false
 		}
