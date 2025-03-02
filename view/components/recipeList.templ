@@ -18,7 +18,7 @@ templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
 	<div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 4xl:grid-cols-7 gap-4">
 		for _, item := range recipes {
 			<div class="card bg-base-100 shadow-sm m-2">
-				<figure class="relative overflow-hidden cursor-pointer">
+				<figure class="relative overflow-hidden cursor-pointer" hx-get={ "/redirect/recipe/" + item.ID } hx-swap="none">
 					<img
 						src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
 						alt="Food"
