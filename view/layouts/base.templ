@@ -1,8 +1,6 @@
 package layouts
 
-import (
-	"gotth/template/view/components"
-)
+import "gotth/template/view/components"
 
 templ Base() {
 	<!DOCTYPE html>
@@ -23,6 +21,54 @@ templ Base() {
 				{ children... }
 			</div>
 			@components.Footer()
+			<!-- Include this in your base layout or the specific page -->
+			<div id="toast-container" class="toast toast-end z-50">
+				<!-- Toasts will be added here dynamically -->
+			</div>
+			<script>
+			// Listen for htmx:beforeSwap event
+			document.body.addEventListener('htmx:beforeSwap', function(evt) {
+				// Check if the response status code is 422
+				if (evt.detail.xhr.status === 422) {
+				// Prevent the default swap
+				evt.detail.shouldSwap = false;
+				
+				// Get the error message from the response
+				let errorMessage = "Validation failed";
+				try {
+					const response = JSON.parse(evt.detail.xhr.responseText);
+					if (response.message) {
+					errorMessage = response.message;
+					}
+				} catch (e) {
+					// If not JSON or no message property, use the responseText or a default message
+					errorMessage = evt.detail.xhr.responseText || errorMessage;
+				}
+				
+				// Create toast element
+				const toast = document.createElement('div');
+				toast.className = 'alert alert-error';
+				toast.innerHTML = `
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+					</svg>
+					<span>${errorMessage}</span>
+				`;
+				
+				// Add to toast container
+				const toastContainer = document.getElementById('toast-container');
+				toastContainer.appendChild(toast);
+				
+				// Remove after 7 seconds
+				setTimeout(() => {
+					toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+					setTimeout(() => {
+					toast.remove();
+					}, 500);
+				}, 7000);
+				}
+			});
+			</script>
 		</body>
 	</html>
 }

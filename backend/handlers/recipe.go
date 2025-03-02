@@ -72,8 +72,8 @@ func HandleServings(w http.ResponseWriter, r *http.Request) {
 	recipe.Ingredients = ingredients
 
 	if servingSice < 1 {
-		w.WriteHeader(http.StatusBadGateway)
-		w.Write([]byte("Bad Gateway"))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte("Cant go below 1"))
 		return
 	}
 

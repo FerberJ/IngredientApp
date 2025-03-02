@@ -65,6 +65,7 @@ type Recipe struct {
 	Keywords           []string        `json:"keywords"`
 	CreatedAt          time.Time       `json:"createdAt"`
 	RecipeInstructions []string        `json:"recipeInstructions"`
+	Tip                string          `json:"tip"`
 }
 
 type Name struct {

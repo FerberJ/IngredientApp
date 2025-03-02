@@ -7,34 +7,39 @@ import (
 )
 
 templ Servings(ingredients []models.Ingredient, serving uint, id string) {
-		<!-- Yield / Servings -->
-		<div class="flex flex-column flex-nowrap items-center mb-4 ">
-			<div class="font-bold text-xl font-sans text-end" itemprop="recipeYield">{ strconv.Itoa(int(serving)) }</div>
-			{{ increseUrl := "/recipe/" + id + "/servings/" + strconv.Itoa(int(serving)+1) }}
-			{{ decreseUrl := "/recipe/" + id + "/servings/" + strconv.Itoa(int(serving)-1) }}
-			<button class="btn btn-circle btn-xs btn-primary ml-2" hx-get={ increseUrl } hx-target="#servings" hx-swap="innerHTML" hx-on::after-swap="reloadBringWidget()">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-				</svg>
-			</button>
-			<button class="btn btn-circle btn-xs btn-primary ml-2" hx-get={ decreseUrl } hx-target="#servings" hx-swap="innerHTML" hx-on::after-swap="reloadBringWidget()">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
-				</svg>
-			</button>
-		</div>
-		<ul>
-			for _, item := range ingredients {
-				<li>
-					<div itemprop="recipeIngredient" class="flex">
-						<div class="ml-2 font-semibold w-1/2">
-							{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
-						</div>
-						<div class="w-1/2">
-							{ item.Text }
-						</div>
+	<!-- Yield / Servings -->
+	<div class="flex flex-column flex-nowrap items-center mb-4 ">
+		<div class="font-bold text-xl font-sans text-end" itemprop="recipeYield">{ strconv.Itoa(int(serving)) }</div>
+		{{ increseUrl := "/recipe/" + id + "/servings/" + strconv.Itoa(int(serving)+1) }}
+		{{ decreseUrl := "/recipe/" + id + "/servings/" + strconv.Itoa(int(serving)-1) }}
+		<button class="btn btn-circle btn-xs btn-primary ml-2" hx-get={ increseUrl } hx-target="#servings" hx-swap="innerHTML" hx-on::after-swap="reloadBringWidget()">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+			</svg>
+		</button>
+		<button class="btn btn-circle btn-xs btn-primary ml-2" hx-get={ decreseUrl } hx-target="#servings" hx-swap="innerHTML" hx-on::after-swap="reloadBringWidget()">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"></path>
+			</svg>
+		</button>
+		if serving == 1 {
+			<span class="font-bold text-lg font-sans text-end ml-4">Portion</span>
+		} else {
+			<span class="font-bold text-lg font-sans text-end ml-4">Portions</span>
+		}
+	</div>
+	<ul>
+		for _, item := range ingredients {
+			<li>
+				<div itemprop="recipeIngredient" class="flex">
+					<div class="ml-2 font-semibold w-1/2">
+						{ fmt.Sprintf("%v%s", item.Amount, item.Unit) }
 					</div>
-				</li>
-			}
-		</ul>
+					<div class="w-1/2">
+						{ item.Text }
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
 }
