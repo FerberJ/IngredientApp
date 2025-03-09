@@ -1,9 +1,8 @@
 package utils
 
 import (
-	"regexp"
-	"strconv"
-	"strings"
+	"fmt"
+	"time"
 )
 
 func Contains(slice []string, str string) bool {
@@ -40,41 +39,19 @@ func RemoveString(slice []string, value string) []string {
 	return slice
 }
 
-func PtToString(pt string) string {
-	ret := ""
+func GetTotalTime(t1Str, t2Str string) string {
+	t1, _ := time.Parse("15:04", t1Str)
+	t2, _ := time.Parse("15:04", t2Str)
 
-	hourMatchString := "[0-9]+H"
-	minuteMatchString := "[0-9]+M"
+	// Convert to duration since midnight
+	d1 := time.Duration(t1.Hour())*time.Hour + time.Duration(t1.Minute())*time.Minute
+	d2 := time.Duration(t2.Hour())*time.Hour + time.Duration(t2.Minute())*time.Minute
 
-	hourRe := regexp.MustCompile(hourMatchString)
-	minuteRe := regexp.MustCompile(minuteMatchString)
+	// Sum the durations
+	sum := d1 + d2
 
-	hourStr := hourRe.FindString(pt)
-	minuteStr := minuteRe.FindString(pt)
-
-	if hourStr != "" {
-		hourNum, _ := strconv.Atoi(strings.TrimSuffix(hourStr, "H"))
-
-		hourUnit := "Hours"
-		if hourNum == 1 {
-			hourUnit = "Hour"
-		}
-
-		hourStr = strings.ReplaceAll(hourStr, "H", " "+hourUnit)
-		ret += hourStr
-	}
-
-	if minuteStr != "" {
-		minuteNum, _ := strconv.Atoi(strings.TrimSuffix(minuteStr, "M"))
-
-		minuteUnit := "Minutes"
-		if minuteNum == 1 {
-			minuteUnit = "Minute"
-		}
-
-		minuteStr = strings.ReplaceAll(minuteStr, "M", " "+minuteUnit)
-		ret += " " + minuteStr
-	}
-
-	return ret
+	// Format the result
+	hours := int(sum.Hours())
+	minutes := int(sum.Minutes()) % 60
+	return fmt.Sprintf("%02d:%02d", hours, minutes)
 }

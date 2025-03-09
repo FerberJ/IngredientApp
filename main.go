@@ -6,6 +6,7 @@ import (
 	"gotth/template/backend/db"
 	"gotth/template/backend/handlers"
 	"gotth/template/backend/store"
+	"gotth/template/backend/utils"
 	"log"
 	"log/slog"
 	"net/http"
@@ -21,6 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	recipe := utils.ImportRecipe("https://fooby.ch/de/rezepte/22857/chicoree-ragout-mit-pasta-")
+	fmt.Println(recipe)
+
+	db.NewMinioProvider()
 	db.NewRedisProvider("localhost:6379", "")
 
 	auth.InitCasdoor()
@@ -45,6 +50,7 @@ func main() {
 
 	// Redirect to new paths
 	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
+	router.Get("/redirect/recipe/add", handlers.RedirectToAddRecipe)
 	router.Get("/redirect/home", handlers.RedirectToHome)
 
 	// Page for Recipe List
@@ -57,6 +63,18 @@ func main() {
 	// Page for showing a single Recipe
 	router.Get("/recipe/{id}", handlers.HandleRecipePage) // Recipe Page
 	router.Get("/recipe/{id}/servings/{count}", handlers.HandleServings)
+
+	// Page for showing add a new Recipe
+	router.Get("/recipe/add", handlers.HandleAddRecipePage) // Add Recipe Page
+	router.Get("/recipe/add/ingredient", handlers.HandleAddIngredientInput)
+	router.Delete("/recipe/add/ingredient", handlers.HandleRemoveIngredientInput)
+	router.Get("/recipe/add/instruction", handlers.HandleAddInstructionInput)
+	router.Delete("/recipe/add/instruction", handlers.HandleRemoveInstructionInput)
+	router.Post("/recipe", handlers.HandleAddRecipe)
+	router.Get("/recipe/add/keyword", handlers.HandleAddRecipeAddBadge)
+	router.Delete("/recipe/add/keyword", handlers.HandleAddRecipeRemoveBadge)
+
+	router.Get("/images/{image}", handlers.HandleImageGet)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)

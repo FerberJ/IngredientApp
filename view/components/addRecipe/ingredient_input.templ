@@ -1,0 +1,15 @@
+package add_recipe_components
+
+templ IngredientInput() {
+	<div class="join rounded-box mb-2" name="ingredients">
+		<input type="number" name="amount" class="input join-item" placeholder="Amount"/>
+		<input type="text" name="unit" class="input join-item" placeholder="Unit"/>
+		<input type="text" name="ingredient" class="input join-item" placeholder="Ingredient"/>
+		<button
+			class="btn btn-error join-item"
+			hx-target="closest div"
+			hx-swap="outerHTML"
+			hx-delete="/recipe/add/ingredient"
+		>Remove</button>
+	</div>
+}

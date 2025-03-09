@@ -20,9 +20,9 @@ templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
 			<div class="card bg-base-100 shadow-sm m-2">
 				<figure class="relative overflow-hidden cursor-pointer" hx-get={ "/redirect/recipe/" + item.ID } hx-swap="none">
 					<img
-						src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
+						src={"http://localhost:3000/images/" + item.Image}
 						alt="Food"
-						class="object-cover w-full h-full transition-transform duration-500 transform hover:scale-110"
+						class="object-cover w-full transition-transform duration-500 transform hover:scale-110 h-48 max-h-48"
 					/>
 				</figure>
 				<div class="card-body flex flex-col justify-between">
@@ -35,7 +35,7 @@ templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
 								</svg>
 							</button>
 						</div>
-						<p class="line-clamp-1 overflow-hidden text-ellipsis italic">{ item.User }</p>
+						<p class="line-clamp-1 overflow-hidden text-ellipsis italic">{ item.UserName }</p>
 						<p class="line-clamp-2 overflow-hidden text-ellipsis">{ item.Description }</p>
 					</div>
 					<div class="card-actions justify-start">

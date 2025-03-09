@@ -12,6 +12,7 @@ type RecipeCard struct {
 	Description    string    `json:"description"`
 	Image          string    `json:"image"`
 	User           string    `json:"user"`
+	UserName       string    `json:"userName"`
 	Private        bool      `json:"private"`
 	RecipeYield    string    `json:"recipeYield"`
 	RecipeCategory string    `json:"recipeCategory"`
@@ -50,6 +51,7 @@ type Recipe struct {
 	Description        string          `json:"description"`
 	Image              string          `json:"image"`
 	User               string          `json:"user"`
+	UserName           string          `json:"userName"`
 	Private            bool            `json:"private"`
 	RecipeYield        string          `json:"recipeYield"`
 	RecipeCategory     string          `json:"recipeCategory"`

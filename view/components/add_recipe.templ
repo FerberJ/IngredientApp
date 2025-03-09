@@ -1,0 +1,115 @@
+package components
+
+templ AddRecipe() {
+	<div class="w-full flex justify-center">
+		<div class="justify-center flex-col w-full px-4 lg:w-2xl lg:px-0">
+			<form
+				hx-post="/recipe"
+				hx-validate="true"
+				hx-swap="none"
+				enctype="multipart/form-data"
+			>
+				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
+					<legend class="fieldset-legend">Base Info</legend>
+					<label class="fieldset-label">Private</label>
+					<input type="checkbox" checked="checked" name="private" class="toggle toggle-lg"/>
+					<label class="fieldset-label">Recipe Title</label>
+					<input type="text" name="title" placeholder="Awesome Recipe" class="input w-full"/>
+					<label class="fieldset-label">Image</label>
+					<input
+						type="file"
+						name="image"
+						class="file-input file-input-ghost"
+						accept="image/jpg,image/png,image/gif,image/webp"
+						onchange="validateFileSize(this)"
+						accept="image/*"
+					/>
+					<label class="fieldset-label">Description</label>
+					<textarea class="textarea w-full" name="description" placeholder="Short Description about your amazing dish"></textarea>
+					<div class="join rounded-box w-full">
+						<label class="fieldset-label join-item">Prep Time</label>
+						<label class="fieldset-label join-item">Cook Time</label>
+					</div>
+					<div class="join rounded-box w-full">
+						<input type="time" name="preptime" class="input join-item w-full"/>
+						<input type="time" name="cooktime" class="input join-item w-full"/>
+					</div>
+				</fieldset>
+				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
+					<legend class="fieldset-legend">Keywords</legend>
+					<div class="flex">
+						<input type="text" name="keywordinput" id="keywordInput" placeholder="Add Keyword and Press enter" class="input join-item w-full mr-4"/>
+						<button
+							class="btn btn-primary"
+							hx-get="/recipe/add/keyword"
+							hx-target="#addRecipeBadge"
+							hx-swap="beforeend"
+							hx-vals='js:{ keyword: document.getElementById("keywordInput").value }'
+        					hx-on::after-request="resetInputField()"
+						>
+							Add Keyword
+						</button>
+					</div>
+					<div id="addRecipeBadge">
+					</div>
+				</fieldset>
+				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
+					<legend class="fieldset-legend">Ingredients</legend>
+					<label class="fieldset-label">Portions</label>
+					<input
+						type="number"
+						class="input validator w-full"
+						required
+						placeholder="1"
+						min="1"
+						name="servings"
+					/>
+					<p class="validator-hint">Must be between be at least 1</p>
+					<button class="btn btn-primary" hx-get="/recipe/add/ingredient" hx-target="#ingredients" hx-swap="beforeend">Add Ingredient</button>
+					<div id="ingredients">
+						<!--List Ingredient Inputs-->
+					</div>
+				</fieldset>
+				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
+					<legend class="fieldset-legend">Instructions</legend>
+					<button class="btn btn-primary" hx-get="/recipe/add/instruction" hx-target="#instructions" hx-swap="beforeend">Add Instruction</button>
+					<div id="instructions" class="w-full"></div>
+				</fieldset>
+				<button class="btn btn-primary mt-4">Submit Recipe</button>
+			</form>
+		</div>
+	</div>
+	<script>
+	    function resetInputField() {
+			document.getElementById('keywordInput').value = ''; // Reset input after request
+		}
+
+        function validateFileSize(input) {
+            // Check if a file is selected
+            if (!input.files || input.files.length === 0) {
+                alert('Please select a file.');
+                return false;
+            }
+
+            const file = input.files[0];
+            
+            // Check file type
+            const allowedTypes = ['image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/jpeg'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only image files (JPEG, PNG, GIF, WebP) are allowed.');
+                input.value = ''; // Clear the input
+                return false;
+            }
+
+            // Optional: Check file size (e.g., limit to 5MB)
+            const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSizeInBytes) {
+                alert('File is too large. Maximum file size is 5MB.');
+                input.value = ''; // Clear the input
+                return false;
+            }
+
+            return true;
+        }
+ 	</script>
+}

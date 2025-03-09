@@ -22,3 +22,10 @@ templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving
 		@components.Recipe(recipe, serving)
 	}
 }
+
+templ CreateRecipeIndex(user string, authenticated bool) {
+	@layouts.Base() {
+		@components.Header(user, authenticated)
+		@components.AddRecipe()
+	}
+}

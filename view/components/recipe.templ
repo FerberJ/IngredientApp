@@ -17,7 +17,7 @@ templ Recipe(recipe models.Recipe, serving uint) {
 		}
 		<img
 			itemprop="image"
-			src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.jJI3bTJ-diLfKDHb9-vwmwHaE8%26pid%3DApi&f=1&ipt=b25e8af1f5d4892ac270daa2f4caac07ff916ff437a8433d35fdbfdf03f6c73c&ipo=images"
+			src={"http://localhost:3000/images/" + recipe.Image}
 			alt="Food"
 			class="w-full h-110 object-cover"
 			style="object-position: center 50%;"

@@ -1,0 +1,17 @@
+package add_recipe_components
+
+templ ClosableBadge(name string) {
+	<span class="badge badge-accent ml-2 my-2" >
+		<button 
+        class="btn btn-circle btn-xs btn-accent" 
+        hx-delete="/recipe/add/keyword"
+        hx-swap="outerHTML" 
+        hx-target="closest span">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+			</svg>
+		</button>
+		{ name }
+        <input class="hidden" name="keyword" value={name} />
+	</span>
+}

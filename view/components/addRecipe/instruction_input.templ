@@ -1,0 +1,17 @@
+package add_recipe_components
+
+templ InstructionInput() {
+    <div class="instruction-wrapper mb-2">
+	<div class="join rounded-box mb-2 w-full bg-green-100" name="instructions">
+		<input type="text" name="instruction" class="input join-item w-full" placeholder="Title"/>
+		<button
+			class="btn btn-error join-item"
+			hx-target="closest .instruction-wrapper"
+			hx-swap="outerHTML"
+			hx-delete="/recipe/add/instruction"
+		>Remove</button>
+    </div>
+	<textarea class="textarea w-full" name="instruction_description" placeholder="Descripe the Step of this recipe"></textarea>
+    <div class="divider"></div>
+	</div>
+}
