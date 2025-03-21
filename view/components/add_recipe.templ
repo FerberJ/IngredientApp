@@ -5,7 +5,7 @@ import "gotth/template/view/components/addRecipe"
 import "fmt"
 import "gotth/template/backend/utils"
 
-templ AddRecipe(recipe models.Recipe) {
+templ AddRecipe(recipe models.Recipe, edit bool) {
 	<div class="w-full flex justify-center" id="addRecipe">
 		<div class="justify-center flex-col w-full px-4 lg:w-2xl lg:px-0">
 			<div class="flex mt-4">

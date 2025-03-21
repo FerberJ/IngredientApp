@@ -295,8 +295,27 @@ func parseRecipeFromJSON(data map[string]interface{}, recipe *models.Recipe) {
 	if ingredients, ok := data["recipeIngredient"].([]interface{}); ok {
 		for _, ing := range ingredients {
 			if ingStr, ok := ing.(string); ok {
+				ingredientArr := strings.Split(ingStr, " ")
+				text := ingStr
+				var amount float64 = 0
+				amountIndex := -1
+
+				for i, s := range ingredientArr {
+					a, err := strconv.ParseFloat(s, 10)
+					if err == nil {
+						amount = a
+						amountIndex = i
+						break
+					}
+				}
+
+				if amountIndex > -1 {
+					text = strings.Replace(ingStr, ingredientArr[amountIndex]+" ", "", 1)
+				}
+
 				ingredient := models.Ingredient{
-					Text: ingStr,
+					Text:   text,
+					Amount: amount,
 				}
 				recipe.Ingredients = append(recipe.Ingredients, ingredient)
 			}

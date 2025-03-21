@@ -26,6 +26,6 @@ templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving
 templ CreateRecipeIndex(user string, authenticated bool) {
 	@layouts.Base() {
 		@components.Header(user, authenticated)
-		@components.AddRecipe(models.Recipe{})
+		@components.AddRecipe(models.Recipe{}, false)
 	}
 }

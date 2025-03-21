@@ -35,5 +35,5 @@ func HandleAddRecipeRemoveBadge(w http.ResponseWriter, r *http.Request) {
 func HandleRecipeImportUrl(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Query().Get("url")
 	recipe := utils.ImportRecipe(url)
-	components.AddRecipe(recipe).Render(r.Context(), w)
+	components.AddRecipe(recipe, false).Render(r.Context(), w)
 }
