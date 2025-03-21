@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"gotth/template/backend/auth"
+	"gotth/template/backend/utils"
+	"gotth/template/view/components"
 	add_recipe_components "gotth/template/view/components/addRecipe"
 	"gotth/template/view/home"
 	"net/http"
@@ -28,4 +30,10 @@ func HandleAddRecipeAddBadge(w http.ResponseWriter, r *http.Request) {
 
 func HandleAddRecipeRemoveBadge(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
+}
+
+func HandleRecipeImportUrl(w http.ResponseWriter, r *http.Request) {
+	url := r.URL.Query().Get("url")
+	recipe := utils.ImportRecipe(url)
+	components.AddRecipe(recipe).Render(r.Context(), w)
 }

@@ -6,8 +6,11 @@ import (
 	"strconv"
 )
 
-templ Recipe(recipe models.Recipe, serving uint) {
-	<div itemscope itemtype="http://schema.org/Recipe" class="flex flex-col items-center w-full">
+templ Recipe(recipe models.Recipe, serving uint, isUsers bool) {
+	<div itemscope itemtype="http://schema.org/Recipe" class="flex flex-col items-center w-full relative">
+		if isUsers {
+
+		}
 		<!-- Optional but recommended structured data -->
 		if recipe.RecipeCategory != "" {
 			<meta itemprop="recipeCategory" content={ recipe.RecipeCategory }/>
@@ -17,7 +20,7 @@ templ Recipe(recipe models.Recipe, serving uint) {
 		}
 		<img
 			itemprop="image"
-			src={"http://localhost:3000/images/" + recipe.Image}
+			src={ "http://localhost:3000/images/" + recipe.Image }
 			alt="Food"
 			class="w-full h-110 object-cover"
 			style="object-position: center 50%;"

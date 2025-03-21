@@ -6,7 +6,6 @@ import (
 	"gotth/template/backend/db"
 	"gotth/template/backend/handlers"
 	"gotth/template/backend/store"
-	"gotth/template/backend/utils"
 	"log"
 	"log/slog"
 	"net/http"
@@ -17,13 +16,11 @@ import (
 )
 
 func main() {
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	recipe := utils.ImportRecipe("https://fooby.ch/de/rezepte/22857/chicoree-ragout-mit-pasta-")
-	fmt.Println(recipe)
 
 	db.NewMinioProvider()
 	db.NewRedisProvider("localhost:6379", "")
@@ -73,6 +70,7 @@ func main() {
 	router.Post("/recipe", handlers.HandleAddRecipe)
 	router.Get("/recipe/add/keyword", handlers.HandleAddRecipeAddBadge)
 	router.Delete("/recipe/add/keyword", handlers.HandleAddRecipeRemoveBadge)
+	router.Get("/recipe/import/url", handlers.HandleRecipeImportUrl)
 
 	router.Get("/images/{image}", handlers.HandleImageGet)
 

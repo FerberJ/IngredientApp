@@ -64,28 +64,51 @@ func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 	totalTime := utils.GetTotalTime(prepTime, cookTime)
 	servings, _ := strconv.Atoi(r.FormValue("servings"))
 
+	// Setting Time to 00:00 if empty
+	if prepTime == "" {
+		prepTime = "00:00"
+	}
+
+	if cookTime == "" {
+		cookTime = "00:00"
+	}
+
 	// Ingredients
 	amounts := r.Form["amount"]
 	units := r.Form["unit"]
 	ingredient := r.Form["ingredient"]
+
+	selectedRadio := r.FormValue("radio-image")
+	fmt.Println(selectedRadio)
 
 	// Instructions
 	instruction := r.Form["instruction"]
 	instructionDescription := r.Form["instruction_description"]
 	keywords := r.Form["keyword"]
 
-	// Improved file handling
-	file, handler, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, "Cant handle image", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
+	var imageName string
+	switch selectedRadio {
+	case "", "upload":
+		// Improved file handling
+		file, handler, err := r.FormFile("image")
+		if err != nil {
+			http.Error(w, "Cant handle image", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
 
-	imageName, err := dao.AddImage(file, handler)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		imageName, err = dao.AddImage(file, handler)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	case "import":
+		imageUrl := r.FormValue("imageUrl")
+		imageName, err = dao.AddImageFromURL(imageUrl)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
 	var ingredients []models.Ingredient
@@ -132,6 +155,5 @@ func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 
 	id, err := mongoRepository.InsertDocument(recipe, nil)
 
-	fmt.Println(id, id.Hex())
-	w.Header().Set("HX-Replace-Url", "/recipe/"+id.Hex()+"?serving="+strconv.Itoa(servings))
+	w.Header().Set("HX-Redirect", "/recipe/"+id.Hex()+"?serving="+strconv.Itoa(servings))
 }

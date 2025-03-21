@@ -1,8 +1,23 @@
 package components
 
-templ AddRecipe() {
-	<div class="w-full flex justify-center">
+import "gotth/template/backend/models"
+import "gotth/template/view/components/addRecipe"
+import "fmt"
+import "gotth/template/backend/utils"
+
+templ AddRecipe(recipe models.Recipe) {
+	<div class="w-full flex justify-center" id="addRecipe">
 		<div class="justify-center flex-col w-full px-4 lg:w-2xl lg:px-0">
+			<div class="flex mt-4">
+				<input type="text" checked="URL" name="urlInput" id="urlInput" class="input w-full mr-4"/>
+				<button
+					class="btn btn-primary"
+					hx-get="/recipe/import/url"
+					hx-vals='js:{ url: document.getElementById("urlInput").value }'
+					hx-target="#addRecipe"
+					hx-swap="outerHTML"
+				>Import from URL</button>
+			</div>
 			<form
 				hx-post="/recipe"
 				hx-validate="true"
@@ -12,18 +27,39 @@ templ AddRecipe() {
 				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
 					<legend class="fieldset-legend">Base Info</legend>
 					<label class="fieldset-label">Private</label>
-					<input type="checkbox" checked="checked" name="private" class="toggle toggle-lg"/>
+					<input type="checkbox" checked="checked" name="private" class="toggle toggle-lg toggle-primary"/>
 					<label class="fieldset-label">Recipe Title</label>
-					<input type="text" name="title" placeholder="Awesome Recipe" class="input w-full"/>
+					<input type="text" name="title" placeholder="Awesome Recipe" class="input w-full" value={ recipe.Name }/>
 					<label class="fieldset-label">Image</label>
-					<input
-						type="file"
-						name="image"
-						class="file-input file-input-ghost"
-						accept="image/jpg,image/png,image/gif,image/webp"
-						onchange="validateFileSize(this)"
-						accept="image/*"
-					/>
+					if utils.IsValidURL(recipe.Image) {
+						<div class="flex items-center">
+							<input type="radio" name="radio-image" class="radio radio-primary mr-4" value="import" onclick="toggleRequired(false)" checked="checked"/>
+							<img
+								alt="imported image"
+								src={ recipe.Image }
+							/>
+							<input type="hidden" name="imageUrl" value={ recipe.Image }/>
+						</div>
+						<div class="flex items-center">
+							<input type="radio" name="radio-image" value="upload" onclick="toggleRequired(true)" class="radio radio-primary mr-4"/>
+							<input
+								type="file"
+								name="image"
+								value={ recipe.Image }
+								class="file-input file-input-ghost"
+								accept="image/jpg,image/png,image/gif,image/webp"
+							/>
+						</div>
+					} else {
+						<input
+							type="file"
+							name="image"
+							value={ recipe.Image }
+							class="file-input file-input-ghost"
+							accept="image/jpg,image/png,image/gif,image/webp"
+							required
+						/>
+					}
 					<label class="fieldset-label">Description</label>
 					<textarea class="textarea w-full" name="description" placeholder="Short Description about your amazing dish"></textarea>
 					<div class="join rounded-box w-full">
@@ -31,8 +67,8 @@ templ AddRecipe() {
 						<label class="fieldset-label join-item">Cook Time</label>
 					</div>
 					<div class="join rounded-box w-full">
-						<input type="time" name="preptime" class="input join-item w-full"/>
-						<input type="time" name="cooktime" class="input join-item w-full"/>
+						<input type="time" name="preptime" value={ recipe.PrepTime } class="input join-item w-full"/>
+						<input type="time" name="cooktime" value={ recipe.CookTime } class="input join-item w-full"/>
 					</div>
 				</fieldset>
 				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
@@ -45,12 +81,15 @@ templ AddRecipe() {
 							hx-target="#addRecipeBadge"
 							hx-swap="beforeend"
 							hx-vals='js:{ keyword: document.getElementById("keywordInput").value }'
-        					hx-on::after-request="resetInputField()"
+							hx-on::after-request="resetInputField()"
 						>
 							Add Keyword
 						</button>
 					</div>
 					<div id="addRecipeBadge">
+						for _, badge := range recipe.Keywords {
+							@ClosableBadge(badge)
+						}
 					</div>
 				</fieldset>
 				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
@@ -59,23 +98,32 @@ templ AddRecipe() {
 					<input
 						type="number"
 						class="input validator w-full"
+						value={ fmt.Sprintf("%v", recipe.Nutrition.ServingSize) }
 						required
 						placeholder="1"
 						min="1"
 						name="servings"
 					/>
-					<p class="validator-hint">Must be between be at least 1</p>
+					<p class="validator-hint">Must be at least 1</p>
 					<button class="btn btn-primary" hx-get="/recipe/add/ingredient" hx-target="#ingredients" hx-swap="beforeend">Add Ingredient</button>
 					<div id="ingredients">
+						for _, ingredient := range recipe.Ingredients {
+							@add_recipe_components.IngredientInput(ingredient)
+						}
 						<!--List Ingredient Inputs-->
 					</div>
 				</fieldset>
 				<fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box">
 					<legend class="fieldset-legend">Instructions</legend>
 					<button class="btn btn-primary" hx-get="/recipe/add/instruction" hx-target="#instructions" hx-swap="beforeend">Add Instruction</button>
-					<div id="instructions" class="w-full"></div>
+					<div id="instructions" class="w-full">
+						for _, insturction := range recipe.Instructions {
+							@add_recipe_components.InstructionInput(insturction)
+						}
+						<!--List Instruction Inputs-->
+					</div>
 				</fieldset>
-				<button class="btn btn-primary mt-4">Submit Recipe</button>
+				<button class="btn btn-primary my-4">Submit Recipe</button>
 			</form>
 		</div>
 	</div>
@@ -111,5 +159,9 @@ templ AddRecipe() {
 
             return true;
         }
- 	</script>
+
+  function toggleRequired(isRequired) {
+    document.querySelector('input[name="image"]').required = isRequired;
+  }
+   	</script>
 }

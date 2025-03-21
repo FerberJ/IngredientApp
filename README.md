@@ -13,8 +13,10 @@ docker run -p 8000:8000 casbin/casdoor-all-in-one
 * ~~Add Create-option for Recipes~~ 👍
 * ~~Integrate Minio for the Pictures~~ 👍
 * ~~Keywords for Creating~~ 👍
-* Correct Timeformat
-* Import from other recipes
+* ~~Correct Timeformat~~ 👍
+* ~~Import from other recipes~~ 👍
+* ~~Correct User name display~~ 👍
+* Edit mode
 * Fix Header beeing Responsive
 * Add Dockerfile
 * Add Readme (Build & Containers & usw.)

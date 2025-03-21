@@ -42,5 +42,10 @@ func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
 
 	dao.GetServing(w, r, servingSice, &recipe)
 
-	home.RecipeIndex(avatar, authenticated, recipe, uint(recipe.Nutrition.ServingSize)).Render(r.Context(), w)
+	isUsers := false
+	if user != nil {
+		isUsers = recipe.User == user.Id
+	}
+
+	home.RecipeIndex(avatar, authenticated, recipe, uint(recipe.Nutrition.ServingSize), isUsers).Render(r.Context(), w)
 }

@@ -1,10 +1,13 @@
 package add_recipe_components
 
-templ IngredientInput() {
+import "gotth/template/backend/models"
+import "fmt"
+
+templ IngredientInput(ingredient models.Ingredient) {
 	<div class="join rounded-box mb-2" name="ingredients">
-		<input type="number" name="amount" class="input join-item" placeholder="Amount"/>
-		<input type="text" name="unit" class="input join-item" placeholder="Unit"/>
-		<input type="text" name="ingredient" class="input join-item" placeholder="Ingredient"/>
+		<input type="number" name="amount" class="input join-item" placeholder="Amount" value={fmt.Sprintf("%v", ingredient.Amount)} lang="en" step="0.5" min="0" />
+		<input type="text" name="unit" class="input join-item" placeholder="Unit" value={ingredient.Unit} />
+		<input type="text" name="ingredient" class="input join-item" placeholder="Ingredient" value={ingredient.Text} />
 		<button
 			class="btn btn-error join-item"
 			hx-target="closest div"

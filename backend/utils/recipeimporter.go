@@ -5,6 +5,8 @@ import (
 	"gotth/template/backend/models"
 	"log"
 	"net/http"
+	neturl "net/url" //
+	"strconv"
 	"strings"
 	"time"
 
@@ -84,12 +86,113 @@ func ImportRecipe(url string) models.Recipe {
 			recipe.PrepTime, _ = s.Find("[itemprop='prepTime']").First().Attr("content")
 			recipe.CookTime, _ = s.Find("[itemprop='cookTime']").First().Attr("content")
 			recipe.TotalTime, _ = s.Find("[itemprop='totalTime']").First().Attr("content")
+			recipe.Image = s.Find("[itemprop='thumbnail']").First().Text()
+
+			// IMAGE-------
+
+			// And in Method 2, replace the current image extraction with:
+			// Find image in microdata
+			imgSrc, imgExists := s.Find("[itemprop='image']").First().Attr("src")
+			if imgExists && imgSrc != "" {
+				recipe.Image = imgSrc
+			} else {
+				// Try content attribute
+				imgContent, contentExists := s.Find("[itemprop='image']").First().Attr("content")
+				if contentExists && imgContent != "" {
+					recipe.Image = imgContent
+				} else {
+					// Try nested img tag
+					nestedImg, nestedImgExists := s.Find("[itemprop='image'] img").First().Attr("src")
+					if nestedImgExists && nestedImg != "" {
+						recipe.Image = nestedImg
+					}
+				}
+			}
+
+			// Also add a fallback method at the end of ImportRecipe if no image was found:
+			// Fallback to looking for the largest/most prominent image if no schema-based image was found
+			if recipe.Image == "" {
+				var largestImg string
+				var largestArea int
+
+				doc.Find("img").Each(func(i int, s *goquery.Selection) {
+					src, exists := s.Attr("src")
+					if !exists || src == "" {
+						return
+					}
+
+					width, _ := s.Attr("width")
+					height, _ := s.Attr("height")
+
+					// Convert attributes to integers (with defaults if missing)
+					w := 0
+					h := 0
+					if width != "" {
+						if wInt, err := strconv.Atoi(width); err == nil {
+							w = wInt
+						}
+					}
+					if height != "" {
+						if hInt, err := strconv.Atoi(height); err == nil {
+							h = hInt
+						}
+					}
+
+					// Compute area - if dimensions exist
+					area := w * h
+
+					// If no dimensions in attributes, prioritize by position in document
+					if area == 0 {
+						area = 1000 - i // Earlier images get higher priority
+					}
+
+					if area > largestArea {
+						largestArea = area
+						largestImg = src
+					}
+				})
+
+				if largestImg != "" {
+					// Ensure the URL is absolute
+					if !strings.HasPrefix(largestImg, "http") {
+						base, err := neturl.Parse(url)
+						if err == nil {
+							imgURL, err := base.Parse(largestImg)
+							if err == nil {
+								largestImg = imgURL.String()
+							}
+						}
+					}
+					recipe.Image = largestImg
+				}
+			}
+
+			//---------
 
 			// Ingredients
 			s.Find("[itemprop='recipeIngredient']").Each(func(i int, s *goquery.Selection) {
 				ingredientStr := strings.TrimSpace(s.Text())
+				ingredientArr := strings.Split(ingredientStr, " ")
+				text := ingredientStr
+				var amount float64 = 0
+				amountIndex := -1
+
+				for i, s := range ingredientArr {
+					a, err := strconv.ParseFloat(s, 10)
+					if err == nil {
+						amount = a
+						amountIndex = i
+						break
+					}
+				}
+
+				if amountIndex > -1 {
+					text = strings.Replace(ingredientStr, ingredientArr[amountIndex]+" ", "", 1)
+				}
+
 				ingredient := models.Ingredient{
-					Text: ingredientStr,
+					Text:   text,
+					Amount: amount,
 				}
 				if ingredientStr != "" {
 					recipe.Ingredients = append(recipe.Ingredients, ingredient)
@@ -110,6 +213,22 @@ func ImportRecipe(url string) models.Recipe {
 			// Nutrition
 			recipe.Nutrition.Calories = s.Find("[itemprop='calories']").First().Text()
 		})
+	}
+
+	// Image
+
+	recipe.CookTime, _ = FormatDuration(recipe.CookTime)
+	recipe.PrepTime, _ = FormatDuration(recipe.PrepTime)
+
+	yields := strings.Split(recipe.RecipeYield, " ")
+	for _, yield := range yields {
+		servingI, err := strconv.ParseInt(yield, 10, 0)
+		if err == nil {
+			recipe.Nutrition = models.NutritionInfo{
+				ServingSize: int(servingI),
+			}
+			break
+		}
 	}
 
 	return recipe
@@ -144,6 +263,32 @@ func parseRecipeFromJSON(data map[string]interface{}, recipe *models.Recipe) {
 	}
 	if cuisine, ok := data["recipeCuisine"].(string); ok {
 		recipe.RecipeCuisine = cuisine
+	}
+
+	// In the parseRecipeFromJSON function, add this image extraction logic
+	if image, ok := data["image"]; ok {
+		// Handle different image formats in JSON-LD
+		switch v := image.(type) {
+		case string:
+			// Direct URL
+			recipe.Image = v
+		case map[string]interface{}:
+			// ImageObject format
+			if url, ok := v["url"].(string); ok {
+				recipe.Image = url
+			}
+		case []interface{}:
+			// Array of images, use the first one
+			if len(v) > 0 {
+				if imgStr, ok := v[0].(string); ok {
+					recipe.Image = imgStr
+				} else if imgObj, ok := v[0].(map[string]interface{}); ok {
+					if url, ok := imgObj["url"].(string); ok {
+						recipe.Image = url
+					}
+				}
+			}
+		}
 	}
 
 	// Extract ingredients (could be an array of strings)

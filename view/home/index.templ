@@ -16,16 +16,16 @@ templ ListIndex(user string, authenticated bool) {
 }
 
 
-templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint) {
+templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint, isUsers bool) {
 	@layouts.Base() {
 		@components.Header(user, authenticated)
-		@components.Recipe(recipe, serving)
+		@components.Recipe(recipe, serving, isUsers)
 	}
 }
 
 templ CreateRecipeIndex(user string, authenticated bool) {
 	@layouts.Base() {
 		@components.Header(user, authenticated)
-		@components.AddRecipe()
+		@components.AddRecipe(models.Recipe{})
 	}
 }
