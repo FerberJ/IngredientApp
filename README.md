@@ -16,7 +16,8 @@ docker run -p 8000:8000 casbin/casdoor-all-in-one
 * ~~Correct Timeformat~~ 👍
 * ~~Import from other recipes~~ 👍
 * ~~Correct User name display~~ 👍
-* Edit mode
+* ~~Edit mode~~
+* change from recipe.Nutrition.ServingSize to recipeYield
 * Fix Header beeing Responsive
 * Add Dockerfile
 * Add Readme (Build & Containers & usw.)

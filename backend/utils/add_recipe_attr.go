@@ -2,7 +2,8 @@ package utils
 
 import "github.com/a-h/templ"
 
-// hx-post="/recipe"
+// Returns attribuets
+// change the verb of htmx
 func GetAttr(edit bool, id string) templ.Attributes {
 	if edit {
 		return templ.Attributes{"hx-put": "/recipe/" + id}

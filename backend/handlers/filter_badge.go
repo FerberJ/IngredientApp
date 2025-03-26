@@ -4,6 +4,7 @@ import (
 	"gotth/template/backend/store"
 	"gotth/template/backend/utils"
 	"net/http"
+	"slices"
 
 	"github.com/go-chi/chi"
 )
@@ -18,7 +19,7 @@ func HandleAddClosableBadge(w http.ResponseWriter, r *http.Request) {
 		valSlice = val.([]string)
 	}
 
-	if !utils.Contains(valSlice, keyword) {
+	if !slices.Contains(valSlice, keyword) {
 		valSlice = append(valSlice, keyword)
 		s.AddValue("badgeList", valSlice, w, r)
 	}

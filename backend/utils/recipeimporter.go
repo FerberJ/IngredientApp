@@ -5,7 +5,7 @@ import (
 	"gotth/template/backend/models"
 	"log"
 	"net/http"
-	neturl "net/url" //
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -26,23 +26,27 @@ func ImportRecipe(url string) models.Recipe {
 	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
-	// Make HTTP GET request
+	// Make http GET request to the website of the recipe that should get imported
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("Failed to fetch the website: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// Check if the response status code is OK (200)
 	if resp.StatusCode != http.StatusOK {
 		log.Fatalf("Request failed with status code: %d", resp.StatusCode)
 	}
 
-	// Load HTML document from the response body
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		log.Fatalf("Failed to parse HTML: %v", err)
 	}
+
+	// Try extracting the Recipe from the website.
+	// only recipes using the https://schema.org/Recipe can be extracted.
+	// There will be searched with two methods.
+	// Method 1: JSON-LD
+	// Method 2: mircrodata/RDFa
 
 	// Method 1: Extract recipe data from JSON-LD script tags
 	var recipe models.Recipe
@@ -79,7 +83,6 @@ func ImportRecipe(url string) models.Recipe {
 			// Basic recipe info
 			recipe.Name = s.Find("[itemprop='name']").First().Text()
 			recipe.Description = s.Find("[itemprop='description']").First().Text()
-			//recipe.Author = s.Find("[itemprop='author']").First().Text()
 			recipe.RecipeYield = s.Find("[itemprop='recipeYield']").First().Text()
 			recipe.RecipeCategory = s.Find("[itemprop='recipeCategory']").First().Text()
 			recipe.RecipeCuisine = s.Find("[itemprop='recipeCuisine']").First().Text()
@@ -88,10 +91,7 @@ func ImportRecipe(url string) models.Recipe {
 			recipe.TotalTime, _ = s.Find("[itemprop='totalTime']").First().Attr("content")
 			recipe.Image = s.Find("[itemprop='thumbnail']").First().Text()
 
-			// IMAGE-------
-
-			// And in Method 2, replace the current image extraction with:
-			// Find image in microdata
+			// Find image
 			imgSrc, imgExists := s.Find("[itemprop='image']").First().Attr("src")
 			if imgExists && imgSrc != "" {
 				recipe.Image = imgSrc
@@ -109,7 +109,6 @@ func ImportRecipe(url string) models.Recipe {
 				}
 			}
 
-			// Also add a fallback method at the end of ImportRecipe if no image was found:
 			// Fallback to looking for the largest/most prominent image if no schema-based image was found
 			if recipe.Image == "" {
 				var largestImg string
@@ -167,8 +166,6 @@ func ImportRecipe(url string) models.Recipe {
 				}
 			}
 
-			//---------
-
 			// Ingredients
 			s.Find("[itemprop='recipeIngredient']").Each(func(i int, s *goquery.Selection) {
 				ingredientStr := strings.TrimSpace(s.Text())
@@ -214,8 +211,6 @@ func ImportRecipe(url string) models.Recipe {
 			recipe.Nutrition.Calories = s.Find("[itemprop='calories']").First().Text()
 		})
 	}
-
-	// Image
 
 	recipe.CookTime, _ = FormatDuration(recipe.CookTime)
 	recipe.PrepTime, _ = FormatDuration(recipe.PrepTime)
