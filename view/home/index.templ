@@ -29,3 +29,10 @@ templ CreateRecipeIndex(user string, authenticated bool) {
 		@components.AddRecipe(models.Recipe{}, false)
 	}
 }
+
+templ EditRecipeIndex(user string, authenticated bool, recipe models.Recipe) {
+	@layouts.Base() {
+		@components.Header(user, authenticated)
+		@components.AddRecipe(recipe, true)
+	}
+}

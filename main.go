@@ -48,6 +48,7 @@ func main() {
 	// Redirect to new paths
 	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
 	router.Get("/redirect/recipe/add", handlers.RedirectToAddRecipe)
+	router.Get("/redirect/recipe/edit/{id}", handlers.RedirectToEditRecipe)
 	router.Get("/redirect/home", handlers.RedirectToHome)
 
 	// Page for Recipe List
@@ -73,6 +74,11 @@ func main() {
 	router.Get("/recipe/import/url", handlers.HandleRecipeImportUrl)
 
 	router.Get("/images/{image}", handlers.HandleImageGet)
+
+	// Page for editing a existing Recipe
+	router.Get("/recipe/edit/{id}", handlers.HandleEditRecipePage) // Edit Recipe Page
+	router.Put("/recipe/{id}", handlers.HandleEditRecipe)
+	router.Delete("/recipe/{id}", handlers.HandleDeleteRecipe)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)

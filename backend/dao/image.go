@@ -35,6 +35,19 @@ func AddImage(file multipart.File, handler *multipart.FileHeader) (string, error
 	return newFilename.String(), nil
 }
 
+func DeleteImage(filename string) error {
+	p := db.GetMinioProvider()
+
+	err := p.Client.RemoveObject(context.Background(), "images", filename, minio.RemoveObjectOptions{
+		ForceDelete: true,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func AddImageFromURL(imageURL string) (string, error) {
 	// Create HTTP client with timeout
 	client := &http.Client{

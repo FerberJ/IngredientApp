@@ -103,6 +103,30 @@ type AggregateRating struct {
 	RatingCount int     `json:"ratingCount"`
 }
 
+type RecipeUpdate struct {
+	Name               string          `json:"name"`
+	Description        string          `json:"description"`
+	Image              string          `json:"image"`
+	User               string          `json:"user"`
+	UserName           string          `json:"userName"`
+	Private            bool            `json:"private"`
+	RecipeYield        string          `json:"recipeYield"`
+	RecipeCategory     string          `json:"recipeCategory"`
+	RecipeCuisine      string          `json:"recipeCuisine"`
+	PrepTime           string          `json:"prepTime"`
+	CookTime           string          `json:"cookTime"`
+	TotalTime          string          `json:"totalTime"`
+	Ingredients        []Ingredient    `json:"ingredients"`
+	Instructions       []Instruction   `json:"instructions"`
+	Nutrition          NutritionInfo   `json:"nutrition"`
+	AggregateRating    AggregateRating `json:"aggregateRating"`
+	Cuisine            string          `json:"cuisine"`
+	Keywords           []string        `json:"keywords"`
+	CreatedAt          time.Time       `json:"createdAt"`
+	RecipeInstructions []string        `json:"recipeInstructions"`
+	Tip                string          `json:"tip"`
+}
+
 func GetRecipe() Recipe {
 	return Recipe{
 		Name:           "Spaghetti Bolognese",

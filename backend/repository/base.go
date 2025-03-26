@@ -21,6 +21,7 @@ type Repository interface {
 	FindDocuments(filter bson.M, ctx *context.Context) ([]bson.M, error)
 	UpdateDocument(filter bson.M, update bson.M, ctx *context.Context) error
 	FindDocumentsFields(filter bson.M, fields bson.M, ctx *context.Context) ([]bson.M, error)
+	DeleteDocument(filter bson.M, ctx *context.Context) error
 }
 
 func NewBaseRepository(provider *db.MongoProvider, collection string) *BaseRepository {
@@ -126,5 +127,12 @@ func (r *BaseRepository) UpdateDocument(filter bson.M, update bson.M, ctx *conte
 	ctx = checkContext(ctx)
 	collection := r.getCollection()
 	_, err := collection.UpdateOne(*ctx, filter, bson.M{"$set": update})
+	return err
+}
+
+func (r *BaseRepository) DeleteDocument(filter bson.M, ctx *context.Context) error {
+	ctx = checkContext(ctx)
+	collection := r.getCollection()
+	_, err := collection.DeleteOne(*ctx, filter)
 	return err
 }
