@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"gotth/template/backend/configuration"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,8 +15,8 @@ type MongoProvider struct {
 
 var mongoProvider *MongoProvider
 
-func NewMongoProvider(uri, dbName string) (*MongoProvider, error) {
-	clientOptions := options.Client().ApplyURI(uri)
+func NewMongoProvider(cfg configuration.Configutration) (*MongoProvider, error) {
+	clientOptions := options.Client().ApplyURI(cfg.MongoEndpoint)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func NewMongoProvider(uri, dbName string) (*MongoProvider, error) {
 		return nil, err
 	}
 
-	db := client.Database(dbName)
+	db := client.Database(cfg.MongoDb)
 	setMongoProvider(&MongoProvider{Client: client, Database: db})
 	return mongoProvider, nil
 }

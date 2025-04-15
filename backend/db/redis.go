@@ -1,6 +1,10 @@
 package db
 
-import "github.com/redis/go-redis/v9"
+import (
+	"gotth/template/backend/configuration"
+
+	"github.com/redis/go-redis/v9"
+)
 
 type RedisProvider struct {
 	Client *redis.Client
@@ -8,10 +12,10 @@ type RedisProvider struct {
 
 var redisProvider *RedisProvider
 
-func NewRedisProvider(uri, password string) *RedisProvider {
+func NewRedisProvider(cfg configuration.Configutration) *RedisProvider {
 	client := redis.NewClient(&redis.Options{
-		Addr:     uri,
-		Password: password,
+		Addr:     cfg.RedisEndpoint,
+		Password: cfg.RedisPassword,
 		DB:       0,
 	})
 

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"gotth/template/backend/configuration"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -13,11 +14,11 @@ type MinioProvider struct {
 
 var minioProvider *MinioProvider
 
-func NewMinioProvider() *minio.Client {
+func NewMinioProvider(cfg configuration.Configutration) *minio.Client {
 
-	endpoint := "localhost:9000"
-	accessKeyID := "BH7ksy5eGsnwm2sfFWLG"
-	secretAccessKey := "HAAz9oz4sqzS3dznYbsg1r0gZijkJFAnFlGJZNPE"
+	endpoint := cfg.MinioEndpoint
+	accessKeyID := cfg.MinioAccessKeyID
+	secretAccessKey := cfg.MinioSecretAccessKey
 	userSSL := false
 
 	minioClient, err := minio.New(endpoint, &minio.Options{

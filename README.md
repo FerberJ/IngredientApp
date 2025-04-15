@@ -6,6 +6,25 @@ docker run -p 8000:8000 casbin/casdoor-all-in-one
 
 
 
+# Setup with Docker
+mysql for casdoor
+```
+docker run --name my-mysql-container \
+  -e MYSQL_ROOT_PASSWORD=rootpassword \
+  -e MYSQL_USER=myuser \
+  -e MYSQL_PASSWORD=mypassword \
+  -e MYSQL_DATABASE=casdoor \
+  -p 3307:3306 \
+  -d mysql:latest
+```
+
+docker run \
+  -e driverName=mysql \
+  -e dataSourceName='myuser:mypassword@tcp(host.docker.internal:3307)/' \
+  -p 8007:8000 \
+  casbin/casdoor:latest
+
+
 
 
 # Next Steps

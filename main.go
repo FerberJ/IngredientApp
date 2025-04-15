@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gotth/template/backend/auth"
+	"gotth/template/backend/configuration"
 	"gotth/template/backend/db"
 	"gotth/template/backend/handlers"
 	"gotth/template/backend/store"
@@ -22,13 +23,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.NewMinioProvider()
-	db.NewRedisProvider("localhost:6379", "")
+	cfg := configuration.SetConfiguration()
 
-	auth.InitCasdoor()
+	db.NewMinioProvider(cfg)
+	db.NewRedisProvider(cfg)
+
+	auth.InitCasdoor(cfg)
 	store.InitStore()
 
-	mongoProvider, err := db.NewMongoProvider("mongodb://localhost:27017", "recipesDb")
+	mongoProvider, err := db.NewMongoProvider(cfg)
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB:", err)
 		return
