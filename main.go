@@ -44,9 +44,13 @@ func main() {
 	router.Handle("/*", public())
 
 	// Endpoints for Login / Logout
-	router.Get("/login", handlers.HandleLogin)
+	router.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleLogin(w, r, cfg)
+	})
 	router.Get("/logout", handlers.HandleLogout)
-	router.Get("/callback", handlers.HandleLoginCallback)
+	router.Get("/callback", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleLoginCallback(w, r, cfg)
+	})
 
 	// Redirect to new paths
 	router.Get("/redirect/recipe/{id}", handlers.RedirectToRecipe)
