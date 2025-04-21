@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gotth/template/backend/auth"
 	"gotth/template/backend/configuration"
 	"gotth/template/backend/db"
@@ -33,7 +32,6 @@ func main() {
 
 	mongoProvider, err := db.NewMongoProvider(cfg)
 	if err != nil {
-		fmt.Println("Error connecting to MongoDB:", err)
 		return
 	}
 	defer mongoProvider.Close()
@@ -60,13 +58,23 @@ func main() {
 
 	// Page for Recipe List
 	router.Get("/", handlers.HandleListPage) // Recipe List Page
-	router.Get("/recipes", handlers.HandleRecipes)
-	router.Put("/addlistbadges/{keyword}", handlers.HandleAddClosableBadge)
-	router.Put("/removelistbadges/{keyword}", handlers.HandleRemoveClosableBadge)
-	router.Put("/removelistbadges", handlers.HandleRemoveAllClosableBadge)
+	router.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRecipes(w, r, cfg)
+	})
+	router.Put("/addlistbadges/{keyword}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleAddClosableBadge(w, r, cfg)
+	})
+	router.Put("/removelistbadges/{keyword}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRemoveClosableBadge(w, r, cfg)
+	})
+	router.Put("/removelistbadges", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRemoveAllClosableBadge(w, r, cfg)
+	})
 
 	// Page for showing a single Recipe
-	router.Get("/recipe/{id}", handlers.HandleRecipePage) // Recipe Page
+	router.Get("/recipe/{id}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRecipePage(w, r, cfg)
+	}) // Recipe Page
 	router.Get("/recipe/{id}/servings/{count}", handlers.HandleServings)
 
 	// Page for showing add a new Recipe
@@ -83,9 +91,13 @@ func main() {
 	router.Get("/images/{image}", handlers.HandleImageGet)
 
 	// Page for editing a existing Recipe
-	router.Get("/recipe/edit/{id}", handlers.HandleEditRecipePage) // Edit Recipe Page
+	router.Get("/recipe/edit/{id}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleEditRecipePage(w, r, cfg)
+	}) // Edit Recipe Page
 	router.Put("/recipe/{id}", handlers.HandleEditRecipe)
 	router.Delete("/recipe/{id}", handlers.HandleDeleteRecipe)
+
+	router.Get("/recipe/bring/{id}", handlers.HandleBringRequest)
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("HTTP server started", "listenAddr", listenAddr)

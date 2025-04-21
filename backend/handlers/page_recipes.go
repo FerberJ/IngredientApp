@@ -13,5 +13,5 @@ func HandleListPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	home.ListIndex(user.Avatar, true).Render(r.Context(), w)
+	home.ListIndex(user.Name, true).Render(r.Context(), w)
 }

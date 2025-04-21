@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"gotth/template/backend/auth"
 	"gotth/template/backend/dao"
 	"gotth/template/backend/db"
@@ -22,7 +21,7 @@ func HandleServings(w http.ResponseWriter, r *http.Request) {
 	recipeID := chi.URLParam(r, "id")
 	servingCount := chi.URLParam(r, "count")
 
-	recipe, err := dao.GetRecipe(w, r, recipeID)
+	recipe, err := dao.GetRecipe(w, r, recipeID, false)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Not Found"))
@@ -43,7 +42,7 @@ func HandleServings(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	dao.GetServing(w, r, servingSice, &recipe)
+	dao.GetServing(servingSice, &recipe)
 
 	w.Header().Set("HX-Replace-Url", "/recipe/"+recipeID+"?serving="+strconv.Itoa(servingSice))
 	recipe_components.Servings(recipe.Ingredients, uint(servingSice), recipeID).Render(r.Context(), w)
@@ -82,7 +81,6 @@ func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 	ingredient := r.Form["ingredient"]
 
 	selectedRadio := r.FormValue("radio-image")
-	fmt.Println(selectedRadio)
 
 	// Instructions
 	instruction := r.Form["instruction"]
@@ -165,7 +163,7 @@ func HandleDeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	recipeID := chi.URLParam(r, "id")
 	user, err := auth.GetUser(w, r)
 
-	recipe, err := dao.GetRecipe(w, r, recipeID)
+	recipe, err := dao.GetRecipe(w, r, recipeID, false)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Not Found"))
@@ -187,7 +185,6 @@ func HandleDeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	filter := bson.M{"_id": objectID}
 	err = mongoRepository.DeleteDocument(filter, nil)
-	fmt.Println(err)
 	w.Header().Set("HX-Redirect", "/")
 }
 
@@ -195,7 +192,7 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 	recipeID := chi.URLParam(r, "id")
 	user, err := auth.GetUser(w, r)
 
-	recipe, err := dao.GetRecipe(w, r, recipeID)
+	recipe, err := dao.GetRecipe(w, r, recipeID, false)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Not Found"))

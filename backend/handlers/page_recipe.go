@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"gotth/template/backend/auth"
+	"gotth/template/backend/configuration"
 	"gotth/template/backend/dao"
 	"gotth/template/view/home"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
+func HandleRecipePage(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	authenticated := false
 	avatar := ""
 
@@ -18,13 +19,13 @@ func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetUser(w, r)
 	if err == nil {
 		authenticated = true
-		avatar = user.Avatar
+		avatar = user.Name
 	}
 
 	recipeID := chi.URLParam(r, "id")
 	servingSiceStr := r.URL.Query().Get("serving")
 
-	recipe, err := dao.GetRecipe(w, r, recipeID)
+	recipe, err := dao.GetRecipe(w, r, recipeID, false)
 	if err != nil {
 		return
 	}
@@ -40,12 +41,12 @@ func HandleRecipePage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	dao.GetServing(w, r, servingSice, &recipe)
+	dao.GetServing(servingSice, &recipe)
 
 	isUsers := false
 	if user != nil {
 		isUsers = recipe.User == user.Id
 	}
 
-	home.RecipeIndex(avatar, authenticated, recipe, uint(recipe.Nutrition.ServingSize), isUsers).Render(r.Context(), w)
+	home.RecipeIndex(avatar, authenticated, recipe, uint(recipe.Nutrition.ServingSize), isUsers, cfg).Render(r.Context(), w)
 }

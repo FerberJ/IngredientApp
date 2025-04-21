@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"gotth/template/backend/auth"
+	"gotth/template/backend/configuration"
 	"gotth/template/backend/dao"
 	"gotth/template/view/home"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func HandleEditRecipePage(w http.ResponseWriter, r *http.Request) {
+func HandleEditRecipePage(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	recipeID := chi.URLParam(r, "id")
 	authenticated := false
 	avatar := ""
@@ -18,15 +19,19 @@ func HandleEditRecipePage(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetUser(w, r)
 	if err == nil {
 		authenticated = true
-		avatar = user.Avatar
+		avatar = user.Name
 	}
 
-	recipe, err := dao.GetRecipe(w, r, recipeID)
+	recipe, err := dao.GetRecipe(w, r, recipeID, false)
 	if err != nil {
 		return
 	}
 
-	recipe.Image = "http://localhost:3000/images/" + recipe.Image
+	if recipe.User != user.Id {
+		return
+	}
+
+	recipe.Image = cfg.AppAddress + "/images/" + recipe.Image
 
 	home.EditRecipeIndex(avatar, authenticated, recipe).Render(r.Context(), w)
 }

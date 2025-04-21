@@ -1,0 +1,63 @@
+package components
+
+import (
+	"fmt"
+	"gotth/template/backend/models"
+	"strings"
+)
+
+templ BringRecipe(name string, ingredients []models.Ingredient) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		</head>
+		<body>
+			<div itemtype="http://schema.org/Recipe">
+				<h1 itemprop="name">{ name }</h1>
+				<ul>
+					for _, item := range ingredients {
+						<li>
+							<div itemprop="recipeIngredient" class="flex">
+								<div class="ml-2 font-semibold w-1/2">
+									{ fmt.Sprintf("%v %s", item.Amount, item.Unit) }
+								</div>
+								<div class="w-1/2">
+									{ item.Text }
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+			Bring
+		</body>
+	</html>
+}
+
+// Helper function to format ingredients as JSON array for the structured data
+func formatIngredientsJSON(ingredients []models.Ingredient) string {
+	if len(ingredients) == 0 {
+		return "[]"
+	}
+
+	var ingredientStrings []string
+	for _, ingredient := range ingredients {
+		// Format ingredient as a string: "amount unit name"
+		parts := []string{}
+		if fmt.Sprintf("%f", ingredient.Amount) != "" {
+			parts = append(parts, fmt.Sprintf("%f", ingredient.Amount))
+		}
+		if ingredient.Unit != "" {
+			parts = append(parts, ingredient.Unit)
+		}
+		parts = append(parts, ingredient.Text)
+
+		// Add the formatted ingredient string with proper JSON escaping
+		ingredientString := "\"" + strings.ReplaceAll(strings.Join(parts, " "), "\"", "\\\"") + "\""
+		ingredientStrings = append(ingredientStrings, ingredientString)
+	}
+
+	return strings.Join(ingredientStrings, ",\n\t\t\t\t\t")
+}

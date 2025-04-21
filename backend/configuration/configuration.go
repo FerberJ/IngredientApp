@@ -7,27 +7,29 @@ import (
 )
 
 type Configutration struct {
-	ListenAddress        string `env:"LISTEN_ADDR"`
-	MinioEndpoint        string `env:"MINIO_ENDPOINT"`
-	MinioAccessKeyID     string `env:"MINIO_ACCESS_KEY_ID"`
-	MinioSecretAccessKey string `env:"MINIO_SECRET_ACCESS_KEY"`
-	RedisEndpoint        string `env:"REDIS_ENDPOINT"`
-	RedisPassword        string `env:"REDIS_PASSWORD"`
-	MongoEndpoint        string `env:"MONGO_ENDPOINT"`
-	MongoDb              string `env:"MONGO_DB"`
-	CasdoorEndpoint      string `env:"CASDOOR_ENDPOINT"`
-	CasdoorClientID      string `env:"CASDOOR_CLIENT_ID"`
-	CasdoorClientSecret  string `env:"CASDOOR_CLIENT_SECRET"`
-	CasdoorCertificate   string `env:"CASDOOR_CERTIFICATE"`
-	CasdoorOrganization  string `env:"CASDOOR_ORGANIZATION"`
-	CasdoorApplication   string `env:"CASDOOR_APPLICATION"`
-	CallbackAddress      string `env:"CALLBACK_ADDRESS"`
+	AppAddress           string `env:"APP_ADDR" yaml:"APP_ADDR"`
+	ListenAddress        string `env:"LISTEN_ADDR" yaml:"LISTEN_ADDR"`
+	MinioEndpoint        string `env:"MINIO_ENDPOINT" yaml:"MINIO_ENDPOINT"`
+	MinioAccessKeyID     string `env:"MINIO_ACCESS_KEY_ID" yaml:"MINIO_ACCESS_KEY_ID"`
+	MinioSecretAccessKey string `env:"MINIO_SECRET_ACCESS_KEY" yaml:"MINIO_SECRET_ACCESS_KEY"`
+	RedisEndpoint        string `env:"REDIS_ENDPOINT" yaml:"REDIS_ENDPOINT"`
+	RedisPassword        string `env:"REDIS_PASSWORD" yaml:"REDIS_PASSWORD"`
+	MongoEndpoint        string `env:"MONGO_ENDPOINT" yaml:"MONGO_ENDPOINT"`
+	MongoDb              string `env:"MONGO_DB" yaml:"MONGO_DB"`
+	CasdoorEndpoint      string `env:"CASDOOR_ENDPOINT" yaml:"CASDOOR_ENDPOINT"`
+	CasdoorClientID      string `env:"CASDOOR_CLIENT_ID" yaml:"CASDOOR_CLIENT_ID"`
+	CasdoorClientSecret  string `env:"CASDOOR_CLIENT_SECRET" yaml:"CASDOOR_CLIENT_SECRET"`
+	CasdoorCertificate   string `env:"CASDOOR_CERTIFICATE" yaml:"CASDOOR_CERTIFICATE"`
+	CasdoorOrganization  string `env:"CASDOOR_ORGANIZATION" yaml:"CASDOOR_ORGANIZATION"`
+	CasdoorApplication   string `env:"CASDOOR_APPLICATION" yaml:"CASDOOR_APPLICATION"`
+	CallbackAddress      string `env:"CALLBACK_ADDRESS" yaml:"CALLBACK_ADDRESS"`
 }
 
 func SetConfiguration() Configutration {
 	var cfg Configutration
 	env.Parse(&cfg)
 
+	flag.StringVar(&cfg.AppAddress, "APP_ADDR", cfg.AppAddress, "Address of the app")
 	flag.StringVar(&cfg.ListenAddress, "LISTEN_ADDR", cfg.ListenAddress, "Port on where the Application should be running.")
 	flag.StringVar(&cfg.MinioEndpoint, "MINIO_ENDPOINT", cfg.MinioEndpoint, "Address to the Minio service.")
 	flag.StringVar(&cfg.MinioAccessKeyID, "MINIO_ACCESS_KEY_ID", cfg.MinioAccessKeyID, "Minio access key ID.")

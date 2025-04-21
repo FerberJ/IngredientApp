@@ -45,7 +45,7 @@ func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, e
 
 // Get Recipe from the ID
 // According to the permission it can be possible that the Recipe will not be found.
-func GetRecipe(w http.ResponseWriter, r *http.Request, id string) (models.Recipe, error) {
+func GetRecipe(w http.ResponseWriter, r *http.Request, id string, forBring bool) (models.Recipe, error) {
 	var filter bson.M
 	var recipe models.Recipe
 	recipeIDObjectID, err := primitive.ObjectIDFromHex(id)
@@ -58,6 +58,8 @@ func GetRecipe(w http.ResponseWriter, r *http.Request, id string) (models.Recipe
 	user, err := auth.GetUser(w, r)
 	if err != nil {
 		filter = bson.M{"_id": recipeIDObjectID, "private": false}
+	} else if forBring {
+		filter = bson.M{"_id": recipeIDObjectID}
 	} else {
 		filter = bson.M{
 			"$and": []bson.M{
@@ -85,7 +87,7 @@ func GetRecipe(w http.ResponseWriter, r *http.Request, id string) (models.Recipe
 
 // Ajust the Ingredients according to servingSiceStr
 // If the servingSiceStr is empty, it will return the default servingSice that is defined in the recipe
-func GetServing(w http.ResponseWriter, r *http.Request, servingSice int, recipe *models.Recipe) {
+func GetServing(servingSice int, recipe *models.Recipe) {
 	ingredients := make([]models.Ingredient, 0, len(recipe.Ingredients))
 	devider := float64(recipe.Nutrition.ServingSize) / float64(servingSice)
 	for _, ingredient := range recipe.Ingredients {

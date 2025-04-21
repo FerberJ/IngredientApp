@@ -2,9 +2,10 @@ package components
 
 import (
 	"gotth/template/backend/models"
+	"gotth/template/backend/configuration"
 )
 
-templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
+templ RecipesList(recipes []models.RecipeCard, badgeFilter []string, cfg configuration.Configutration) {
 	<div class="min-h-10 flex items-center">
 		if len(badgeFilter) > 0 {
 			<div>
@@ -20,7 +21,7 @@ templ RecipesList(recipes []models.RecipeCard, badgeFilter []string) {
 			<div class="card bg-base-100 shadow-sm m-2">
 				<figure class="relative overflow-hidden cursor-pointer" hx-get={ "/redirect/recipe/" + item.ID } hx-swap="none">
 					<img
-						src={"http://localhost:3000/images/" + item.Image}
+						src={cfg.AppAddress + "/images/" + item.Image}
 						alt="Food"
 						class="object-cover w-full transition-transform duration-500 transform hover:scale-110 h-48 max-h-48"
 					/>

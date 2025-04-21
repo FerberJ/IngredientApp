@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"gotth/template/backend/configuration"
 	"gotth/template/backend/store"
 	"gotth/template/backend/utils"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func HandleAddClosableBadge(w http.ResponseWriter, r *http.Request) {
+func HandleAddClosableBadge(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	var valSlice []string
 	s := store.GetStore()
 	keyword := chi.URLParam(r, "keyword")
@@ -24,10 +25,10 @@ func HandleAddClosableBadge(w http.ResponseWriter, r *http.Request) {
 		s.AddValue("badgeList", valSlice, w, r)
 	}
 
-	HandleRecipes(w, r)
+	HandleRecipes(w, r, cfg)
 }
 
-func HandleRemoveClosableBadge(w http.ResponseWriter, r *http.Request) {
+func HandleRemoveClosableBadge(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	var valSlice []string
 	s := store.GetStore()
 	keyword := chi.URLParam(r, "keyword")
@@ -40,10 +41,10 @@ func HandleRemoveClosableBadge(w http.ResponseWriter, r *http.Request) {
 		s.AddValue("badgeList", valSlice, w, r)
 	}
 
-	HandleRecipes(w, r)
+	HandleRecipes(w, r, cfg)
 }
 
-func HandleRemoveAllClosableBadge(w http.ResponseWriter, r *http.Request) {
+func HandleRemoveAllClosableBadge(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	var valSlice []string = make([]string, 0)
 	s := store.GetStore()
 
@@ -52,5 +53,5 @@ func HandleRemoveAllClosableBadge(w http.ResponseWriter, r *http.Request) {
 		s.AddValue("badgeList", valSlice, w, r)
 	}
 
-	HandleRecipes(w, r)
+	HandleRecipes(w, r, cfg)
 }

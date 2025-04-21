@@ -4,9 +4,11 @@ import (
 	"gotth/template/backend/models"
 	"gotth/template/view/components/recipe"
 	"strconv"
+	"gotth/template/backend/configuration"
+	"fmt"
 )
 
-templ Recipe(recipe models.Recipe, serving uint, isUsers bool) {
+templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration.Configutration) {
 	<div role="alert" id="delete-dialog" class="alert alert-warning fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]" hidden>
 		<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
@@ -30,7 +32,7 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool) {
 			<div class="w-full max-w-3xl relative">
 				<img
 					itemprop="image"
-					src={ "http://localhost:3000/images/" + recipe.Image }
+					src={ cfg.AppAddress + "/images/" + recipe.Image }
 					alt="Food"
 					class="w-full h-110 object-cover"
 					id="food-image"
@@ -101,7 +103,7 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool) {
 						<!-- Bring Integration -->
 						<div class="my-4 flex w-full justify-center">
 							<script async="async" src="//platform.getbring.com/widgets/import.js"></script>
-							<div data-bring-import="https://ferber.io" data-bring-language="en" style="display:none"></div>
+							<div data-bring-import={cfg.AppAddress+"/recipe/bring/" + recipe.ID + "?serving=" + fmt.Sprintf("%v", serving)} data-bring-language="en" style="display:none"></div>
 							<a href="https://www.getbring.com"></a>
 						</div>
 					</div>

@@ -4,6 +4,7 @@ import (
 	"gotth/template/view/components"
 	"gotth/template/view/layouts"
 	"gotth/template/backend/models"
+	"gotth/template/backend/configuration"
 )
 
 templ ListIndex(user string, authenticated bool) {
@@ -16,10 +17,10 @@ templ ListIndex(user string, authenticated bool) {
 }
 
 
-templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint, isUsers bool) {
+templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint, isUsers bool, cfg configuration.Configutration) {
 	@layouts.Base() {
 		@components.Header(user, authenticated)
-		@components.Recipe(recipe, serving, isUsers)
+		@components.Recipe(recipe, serving, isUsers, cfg)
 	}
 }
 

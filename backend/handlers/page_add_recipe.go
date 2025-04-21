@@ -17,7 +17,7 @@ func HandleAddRecipePage(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetUser(w, r)
 	if err == nil {
 		authenticated = true
-		avatar = user.Avatar
+		avatar = user.Name
 	}
 
 	home.CreateRecipeIndex(avatar, authenticated).Render(r.Context(), w)

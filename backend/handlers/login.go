@@ -23,15 +23,21 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request, cfg configurati
 	c := auth.GetCasdoor()
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		http.Error(w, "Code not found", http.StatusBadRequest)
+		return
 	}
 
 	token, err := c.Client.GetOAuthToken(code, cfg.CallbackAddress)
 	if err != nil {
-		http.Error(w, "Failed to get token: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	s := store.GetStore()
-	s.SaveToken(token.AccessToken, w, r)
+
+	// Add error handling for SaveToken
+	err = s.SaveToken(token.AccessToken, w, r)
+	if err != nil {
+		return
+	}
+
 	http.Redirect(w, r, "/", http.StatusFound)
 }

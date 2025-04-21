@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"gotth/template/backend/db"
 	"net/http"
 
@@ -17,6 +18,10 @@ var store Store
 
 func InitStore() error {
 	provider := db.GetRedisProvider()
+	if provider == nil || provider.Client == nil {
+		return fmt.Errorf("Redis provider or client is nil")
+	}
+
 	var err error
 	// New default RedisStore
 	s, err := redisstore.NewRedisStore(context.Background(), provider.Client)
@@ -36,13 +41,31 @@ func GetStore() Store {
 func (s Store) GetToken(r *http.Request) (*sessions.Session, error) {
 	return s.Store.Get(r, "session")
 }
-
 func (s Store) SaveToken(accessToken string, w http.ResponseWriter, r *http.Request) error {
+	if r == nil {
+		return fmt.Errorf("request is nil")
+	}
+	if w == nil {
+		return fmt.Errorf("response writer is nil")
+	}
+	if s.Store == nil {
+		return fmt.Errorf("redis store is nil")
+	}
+
 	session, err := s.GetToken(r)
 	if err != nil {
 		return err
 	}
+	if session == nil {
+		return fmt.Errorf("session is nil after GetToken")
+	}
+
+	if session.Values == nil {
+		session.Values = make(map[interface{}]interface{})
+	}
+
 	session.Values["token"] = accessToken
+
 	err = session.Save(r, w)
 	if err != nil {
 		return err
@@ -53,6 +76,7 @@ func (s Store) SaveToken(accessToken string, w http.ResponseWriter, r *http.Requ
 
 func (s Store) DeleteToken(w http.ResponseWriter, r *http.Request) error {
 	session, err := s.GetToken(r)
+
 	if err != nil {
 		return err
 	}

@@ -1,10 +1,12 @@
 package components
 
+import "strings"
+
 templ Header(user string, authenticated bool) {
 	<div class="navbar bg-base-100 shadow-sm bg-primary">
 		<div class="navbar-start">
 			<button class="btn btn-ghost" hx-get={ "/redirect/home" } hx-swap="none">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path></svg>
 				Back
 			</button>
 			<a class="text-xl hidden sm:block lg:hidden text-primary-content">🥙 Ingredients App</a>
@@ -18,12 +20,9 @@ templ Header(user string, authenticated bool) {
 				<a href="/login" class="btn">Login</a>
 			} else {
 				<div class="dropdown dropdown-end">
-					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-						<div class="w-10 rounded-full">
-							<img
-								alt="Tailwind CSS Navbar component"
-								src={ user }
-							/>
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar avatar-placeholder">
+						<div class="bg-neutral text-neutral-content w-10 rounded-full">
+							<span class="text-xl">{strings.ToUpper(string(user[0]))}</span>
 						</div>
 					</div>
 					<ul
@@ -31,7 +30,7 @@ templ Header(user string, authenticated bool) {
 						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
 					>
 						<li>
-							<a  hx-get={ "/redirect/recipe/add" } hx-swap="none">
+							<a hx-get={ "/redirect/recipe/add" } hx-swap="none">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
 								Add Recipe
 							</a>
