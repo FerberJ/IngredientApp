@@ -3,6 +3,7 @@ package dao
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"gotth/template/backend/db"
 	"gotth/template/backend/models"
@@ -15,7 +16,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/ostafen/clover/v2/query"
 )
 
 func AddImage(file multipart.File, handler *multipart.FileHeader) (string, error) {
@@ -104,17 +105,18 @@ func AddImageFromURL(imageURL string) (string, error) {
 
 func GetImage(filename string, userId string) (io.Reader, error) {
 	p := db.GetMinioProvider()
-	filter := bson.M{"image": filename}
 
-	recipeRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+	recipeRepository := repository.NewRecipeRepository(db.GetCloverProvider())
+	q := query.NewQuery(recipeRepository.Collection).Where(query.Field("image").Eq(filename))
 
-	res, err := recipeRepository.FindDocument(filter, nil)
+	res, err := recipeRepository.FindDocument(q, nil)
 	if err != nil {
 		return nil, err
 	}
-	data, _ := bson.Marshal(res)
+
+	data, _ := json.Marshal(res)
 	var recipe models.Recipe
-	bson.Unmarshal(data, &recipe)
+	json.Unmarshal(data, &recipe)
 
 	if recipe.Private && userId != recipe.User {
 		return nil, fmt.Errorf("Access denied")

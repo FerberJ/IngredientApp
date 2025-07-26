@@ -20,7 +20,7 @@ func NewMinioProvider(cfg configuration.Configutration) *minio.Client {
 	endpoint := cfg.MinioEndpoint
 	accessKeyID := cfg.MinioAccessKeyID
 	secretAccessKey := cfg.MinioSecretAccessKey
-	userSSL := false
+	userSSL := true
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),

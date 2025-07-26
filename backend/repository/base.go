@@ -2,29 +2,29 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"gotth/template/backend/db"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	c "github.com/ostafen/clover/v2"
+	d "github.com/ostafen/clover/v2/document"
+	"github.com/ostafen/clover/v2/query"
 )
 
 type BaseRepository struct {
-	Provider   *db.MongoProvider
+	Provider   *db.CloverProvider
 	Collection string
 }
 
 type Repository interface {
-	InsertDocument(document any, ctx *context.Context) (primitive.ObjectID, error)
-	FindDocument(filter bson.M, ctx *context.Context) (bson.M, error)
-	FindDocuments(filter bson.M, ctx *context.Context) ([]bson.M, error)
-	UpdateDocument(filter bson.M, update bson.M, ctx *context.Context) error
-	FindDocumentsFields(filter bson.M, fields bson.M, ctx *context.Context) ([]bson.M, error)
-	DeleteDocument(filter bson.M, ctx *context.Context) error
+	InsertDocument(document any, ctx *context.Context) (string, error)
+	FindDocument(query *query.Query, ctx *context.Context) (map[string]any, error)
+	FindDocuments(query *query.Query, ctx *context.Context) ([]map[string]any, error)
+	UpdateDocument(query *query.Query, update map[string]any, ctx *context.Context) error
+	//FindDocumentsFields(filter bson.M, fields bson.M, ctx *context.Context) ([]bson.M, error)
+	DeleteDocument(query *query.Query, ctx *context.Context) error
 }
 
-func NewBaseRepository(provider *db.MongoProvider, collection string) *BaseRepository {
+func NewBaseRepository(provider *db.CloverProvider, collection string) *BaseRepository {
 	return &BaseRepository{
 		Provider:   provider,
 		Collection: collection,
@@ -40,60 +40,85 @@ func checkContext(ctx *context.Context) *context.Context {
 	return ctx
 }
 
-func (r *BaseRepository) getCollection() *mongo.Collection {
-	collection := r.Provider.Database.Collection(r.Collection)
+func (r *BaseRepository) getCollection() *c.DB {
+	hasCollection, err := r.Provider.Database.HasCollection(r.Collection)
+	if err != nil {
+		return nil
+	}
+
+	if !hasCollection {
+		err := r.Provider.Database.CreateCollection(r.Collection)
+		if err != nil {
+			return nil
+		}
+	}
+
+	collection := r.Provider.Database
 	return collection
 }
 
-func (r *BaseRepository) InsertDocument(document any, ctx *context.Context) (primitive.ObjectID, error) {
-	ctx = checkContext(ctx)
-	collection := r.getCollection()
-	result, err := collection.InsertOne(*ctx, document)
-	if err != nil {
-		return primitive.NilObjectID, err
-	}
-	return result.InsertedID.(primitive.ObjectID), nil
-}
+func (r *BaseRepository) getDoc(document any) (*d.Document, error) {
+	mapDoc := make(map[string]any)
 
-func (r *BaseRepository) FindDocument(filter bson.M, ctx *context.Context) (bson.M, error) {
-	var result bson.M
-	ctx = checkContext(ctx)
-	collection := r.getCollection()
-	err := collection.FindOne(*ctx, filter).Decode(&result)
+	documentByte, err := json.Marshal(document)
 	if err != nil {
 		return nil, err
+	}
+
+	err = json.Unmarshal(documentByte, &mapDoc)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := d.NewDocument()
+	doc.SetAll(mapDoc)
+
+	return doc, nil
+}
+
+func (r *BaseRepository) InsertDocument(document any, ctx *context.Context) (string, error) {
+	ctx = checkContext(ctx)
+	collection := r.getCollection()
+	doc, err := r.getDoc(document)
+	if err != nil {
+		return "", err
+	}
+	result, err := collection.InsertOne(r.Collection, doc)
+	if err != nil {
+		return "", err
 	}
 	return result, nil
 }
 
-func (r *BaseRepository) FindDocuments(filter bson.M, ctx *context.Context) ([]bson.M, error) {
-	var results []bson.M
+func (r *BaseRepository) FindDocument(query *query.Query, ctx *context.Context) (map[string]any, error) {
 	ctx = checkContext(ctx)
 	collection := r.getCollection()
-	cursor, err := collection.Find(*ctx, filter)
+	doc, err := collection.FindFirst(query)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(*ctx)
 
-	for cursor.Next(*ctx) {
-		var document bson.M
-		err := cursor.Decode(&document)
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, document)
-	}
+	return doc.AsMap(), nil
+}
 
-	err = cursor.Err()
+func (r *BaseRepository) FindDocuments(query *query.Query, ctx *context.Context) ([]map[string]any, error) {
+	var results []map[string]any
+	ctx = checkContext(ctx)
+	collection := r.getCollection()
+	docs, err := collection.FindAll(query)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, doc := range docs {
+		results = append(results, doc.ToMap())
 	}
 
 	return results, nil
 }
 
-func (r *BaseRepository) FindDocumentsFields(filter bson.M, fields bson.M, ctx *context.Context) ([]bson.M, error) {
+/*
+func (r *BaseRepository) FindDocumentsFields(filter *query.Query, fields bson.M, ctx *context.Context) ([]bson.M, error) {
 	var results []bson.M
 	ctx = checkContext(ctx)
 	collection := r.getCollection()
@@ -122,17 +147,18 @@ func (r *BaseRepository) FindDocumentsFields(filter bson.M, fields bson.M, ctx *
 
 	return results, nil
 }
+*/
 
-func (r *BaseRepository) UpdateDocument(filter bson.M, update bson.M, ctx *context.Context) error {
+func (r *BaseRepository) UpdateDocument(query *query.Query, update map[string]any, ctx *context.Context) error {
 	ctx = checkContext(ctx)
 	collection := r.getCollection()
-	_, err := collection.UpdateOne(*ctx, filter, bson.M{"$set": update})
+	err := collection.Update(query, update)
 	return err
 }
 
-func (r *BaseRepository) DeleteDocument(filter bson.M, ctx *context.Context) error {
+func (r *BaseRepository) DeleteDocument(query *query.Query, ctx *context.Context) error {
 	ctx = checkContext(ctx)
 	collection := r.getCollection()
-	_, err := collection.DeleteOne(*ctx, filter)
+	err := collection.Delete(query)
 	return err
 }

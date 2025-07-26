@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"gotth/template/backend/auth"
 	"gotth/template/backend/dao"
 	"gotth/template/backend/db"
@@ -8,13 +9,12 @@ import (
 	"gotth/template/backend/repository"
 	"gotth/template/backend/utils"
 	recipe_components "gotth/template/view/components/recipe"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/ostafen/clover/v2/query"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func HandleServings(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,7 @@ func HandleServings(w http.ResponseWriter, r *http.Request) {
 func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetUser(w, r)
 
-	mongoRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+	cloverRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 	err = r.ParseMultipartForm(10 << 20) // 10MB limit
 	if err != nil {
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
@@ -154,9 +154,9 @@ func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 		Keywords:     keywords,
 	}
 
-	id, err := mongoRepository.InsertDocument(recipe, nil)
+	id, err := cloverRepository.InsertDocument(recipe, nil)
 
-	w.Header().Set("HX-Redirect", "/recipe/"+id.Hex()+"?serving="+strconv.Itoa(servings))
+	w.Header().Set("HX-Redirect", "/recipe/"+id+"?serving="+strconv.Itoa(servings))
 }
 
 func HandleDeleteRecipe(w http.ResponseWriter, r *http.Request) {
@@ -177,14 +177,10 @@ func HandleDeleteRecipe(w http.ResponseWriter, r *http.Request) {
 
 	dao.DeleteImage(recipe.Image)
 
-	mongoRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+	cloverRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 
-	objectID, err := primitive.ObjectIDFromHex(recipeID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	filter := bson.M{"_id": objectID}
-	err = mongoRepository.DeleteDocument(filter, nil)
+	q := query.NewQuery(cloverRepository.Collection).Where(query.Field("_id").Eq(recipeID))
+	err = cloverRepository.DeleteDocument(q, nil)
 	w.Header().Set("HX-Redirect", "/")
 }
 
@@ -201,7 +197,7 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 	recipe.User = user.Id
 	recipe.UserName = user.Name
 
-	mongoRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+	cloverRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 	err = r.ParseMultipartForm(10 << 20) // 10MB limit
 	if err != nil {
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
@@ -310,11 +306,6 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 		}
 	*/
 
-	objectID, err := primitive.ObjectIDFromHex(recipeID)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	recipeUpdate := models.RecipeUpdate{
 		Name:               recipe.Name,
 		Description:        recipe.Description,
@@ -339,11 +330,11 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 		Tip:                recipe.Tip,
 	}
 
-	filter := bson.M{"_id": objectID}
+	q := query.NewQuery(cloverRepository.Collection).Where(query.Field("_id").Eq(recipeID))
 	recipeBson, err := bson.Marshal(recipeUpdate)
-	updateMap := bson.M{}
-	err = bson.Unmarshal(recipeBson, &updateMap)
-	err = mongoRepository.UpdateDocument(filter, updateMap, nil)
+	var updateMap map[string]any
+	err = json.Unmarshal(recipeBson, &updateMap)
+	err = cloverRepository.UpdateDocument(q, updateMap, nil)
 
 	w.Header().Set("HX-Redirect", "/recipe/"+recipeID+"?serving="+strconv.Itoa(servings))
 }

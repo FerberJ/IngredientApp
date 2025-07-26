@@ -6,7 +6,7 @@ type RecipeRepository struct {
 	*BaseRepository
 }
 
-func NewRecipeRepository(provider *db.MongoProvider) *RecipeRepository {
+func NewRecipeRepository(provider *db.CloverProvider) *RecipeRepository {
 	return &RecipeRepository{
 		BaseRepository: NewBaseRepository(provider, "recipes"),
 	}

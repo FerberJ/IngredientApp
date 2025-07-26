@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"encoding/json"
 	"gotth/template/backend/auth"
 	"gotth/template/backend/db"
 	"gotth/template/backend/models"
@@ -9,24 +10,24 @@ import (
 	"gotth/template/backend/utils"
 	"net/http"
 
+	"github.com/ostafen/clover/v2/query"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, error) {
 	var recipes []models.RecipeCard
-	var filter bson.M
+	var q *query.Query
 
-	recipeRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+	recipeRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 
 	user, err := auth.GetUser(w, r)
 	if err != nil {
-		filter = bson.M{"private": false}
+		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("private").IsFalse())
 	} else {
-		filter = bson.M{"$or": []bson.M{{"private": false}, {"user": user.Id}}}
+		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("private").IsFalse().Or(query.Field("user").Eq(user.Id)))
 	}
 
-	res, err := recipeRepository.FindDocumentsFields(filter, models.GetRecipeCardFilter(), nil)
+	res, err := recipeRepository.FindDocuments(q, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Not Found"))
@@ -46,41 +47,30 @@ func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, e
 // Get Recipe from the ID
 // According to the permission it can be possible that the Recipe will not be found.
 func GetRecipe(w http.ResponseWriter, r *http.Request, id string, forBring bool) (models.Recipe, error) {
-	var filter bson.M
+	var q *query.Query
 	var recipe models.Recipe
-	recipeIDObjectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid recipe ID format"))
-		return recipe, err
-	}
-	recipeRepository := repository.NewRecipeRepository(db.GetMongoProvider())
+
+	recipeRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 	user, err := auth.GetUser(w, r)
 	if err != nil {
-		filter = bson.M{"_id": recipeIDObjectID, "private": false}
+		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("_id").Eq(id).And(query.Field("private").IsFalse()))
 	} else if forBring {
-		filter = bson.M{"_id": recipeIDObjectID}
+		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("_id").Eq(id))
 	} else {
-		filter = bson.M{
-			"$and": []bson.M{
-				{"_id": recipeIDObjectID},
-				{"$or": []bson.M{
-					{"private": false},
-					{"user": user.Id},
-				}},
-			},
-		}
+		q = query.NewQuery(recipeRepository.Collection).
+			Where(query.Field("_id").Eq(id).
+				And(query.Field("private").Eq(false).Or(query.Field("user").Eq(user.Id))))
 	}
 
-	res, err := recipeRepository.FindDocument(filter, nil)
+	res, err := recipeRepository.FindDocument(q, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Not Found"))
 		return recipe, err
 	}
 
-	data, _ := bson.Marshal(res)
-	bson.Unmarshal(data, &recipe)
+	data, _ := json.Marshal(res)
+	json.Unmarshal(data, &recipe)
 
 	return recipe, nil
 }

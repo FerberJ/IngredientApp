@@ -14,10 +14,12 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build -o go-blog
+RUN go build -o go-recipe
+
+RUN chmod +x go-recipe
 
 # Document the port that may need to be published
 EXPOSE 3000
 
 # Start the application
-CMD ["/build/go-blog"]
+CMD ["/build/go-recipe"]

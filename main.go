@@ -6,35 +6,26 @@ import (
 	"gotth/template/backend/db"
 	"gotth/template/backend/handlers"
 	"gotth/template/backend/store"
-	"log"
-	"log/slog"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	cfg := configuration.SetConfiguration()
 
 	db.NewMinioProvider(cfg)
-	db.NewRedisProvider(cfg)
+	db.NewBadgerProvider(cfg)
 
 	auth.InitCasdoor(cfg)
 	store.InitStore()
 
-	mongoProvider, err := db.NewMongoProvider(cfg)
+	cloverProvider, err := db.NewCloverProvider(cfg)
 	if err != nil {
 		return
 	}
-	defer mongoProvider.Close()
+	defer cloverProvider.Close()
 
 	router := chi.NewMux()
 
@@ -99,8 +90,8 @@ func main() {
 
 	router.Get("/recipe/bring/{id}", handlers.HandleBringRequest)
 
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	slog.Info("HTTP server started", "listenAddr", listenAddr)
+	// listenAddr := os.Getenv("LISTEN_ADDR")
+	// slog.Info("HTTP server started", "listenAddr", listenAddr)
 
-	http.ListenAndServe(listenAddr, router)
+	http.ListenAndServe(":3000", router)
 }
