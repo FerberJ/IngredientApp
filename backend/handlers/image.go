@@ -19,6 +19,11 @@ func HandleImageGet(w http.ResponseWriter, r *http.Request) {
 
 	img, _ := dao.GetImage(filename, id)
 
+	if img == nil {
+		http.Error(w, "Image not found", http.StatusNotFound)
+		return
+	}
+
 	w.Header().Set("Content-Type", "image/jpg")
 	if _, err := io.Copy(w, img); err != nil {
 		return

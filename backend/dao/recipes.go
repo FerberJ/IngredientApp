@@ -11,7 +11,6 @@ import (
 	"net/http"
 
 	"github.com/ostafen/clover/v2/query"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, error) {
@@ -36,8 +35,8 @@ func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, e
 
 	for _, resRecipe := range res {
 		var recipe models.RecipeCard
-		data, _ := bson.Marshal(resRecipe)
-		bson.Unmarshal(data, &recipe)
+		data, _ := json.Marshal(resRecipe)
+		json.Unmarshal(data, &recipe)
 		recipes = append(recipes, recipe)
 	}
 

@@ -14,7 +14,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/ostafen/clover/v2/query"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func HandleServings(w http.ResponseWriter, r *http.Request) {
@@ -331,7 +330,7 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	q := query.NewQuery(cloverRepository.Collection).Where(query.Field("_id").Eq(recipeID))
-	recipeBson, err := bson.Marshal(recipeUpdate)
+	recipeBson, err := json.Marshal(recipeUpdate)
 	var updateMap map[string]any
 	err = json.Unmarshal(recipeBson, &updateMap)
 	err = cloverRepository.UpdateDocument(q, updateMap, nil)

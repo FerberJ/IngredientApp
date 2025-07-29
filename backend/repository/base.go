@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"gotth/template/backend/db"
 
 	c "github.com/ostafen/clover/v2"
@@ -98,6 +99,10 @@ func (r *BaseRepository) FindDocument(query *query.Query, ctx *context.Context) 
 		return nil, err
 	}
 
+	if doc == nil {
+		return nil, errors.New("document not found")
+		// or return empty map, depending on your needs
+	}
 	return doc.AsMap(), nil
 }
 

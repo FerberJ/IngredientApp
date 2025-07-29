@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type RecipeCard struct {
-	ID             string    `bson:"_id,omitempty"`
+	ID             string    `json:"_id,omitempty"`
 	Name           string    `json:"name"`
 	Description    string    `json:"description"`
 	Image          string    `json:"image"`
@@ -25,6 +23,7 @@ type RecipeCard struct {
 	Keywords       []string  `json:"keywords"`
 }
 
+/*
 func GetRecipeCardFilter() bson.M {
 	return bson.M{
 		"name":           1,
@@ -43,10 +42,11 @@ func GetRecipeCardFilter() bson.M {
 		"keywords":       1,
 	}
 }
+*/
 
 // Recipe represents a cooking recipe with all the relevant properties from Schema.org.
 type Recipe struct {
-	ID                 string          `bson:"_id,omitempty"`
+	ID                 string          `json:"_id,omitempty"`
 	Name               string          `json:"name"`
 	Description        string          `json:"description"`
 	Image              string          `json:"image"`
