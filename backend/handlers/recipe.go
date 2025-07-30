@@ -84,7 +84,15 @@ func HandleAddRecipe(w http.ResponseWriter, r *http.Request) {
 	// Instructions
 	instruction := r.Form["instruction"]
 	instructionDescription := r.Form["instruction_description"]
-	keywords := r.Form["keyword"]
+	keywordsForm := r.Form["keyword"]
+
+	var keywords []string
+
+	for _, keyword := range keywordsForm {
+		if keyword != "" {
+			keywords = append(keywords, keyword)
+		}
+	}
 
 	var imageName string
 	switch selectedRadio {
@@ -235,7 +243,15 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 	// Instructions
 	instruction := r.Form["instruction"]
 	instructionDescription := r.Form["instruction_description"]
-	keywords := r.Form["keyword"]
+	keywordsForm := r.Form["keyword"]
+
+	var keywords []string
+
+	for _, keyword := range keywordsForm {
+		if keyword != "" {
+			keywords = append(keywords, keyword)
+		}
+	}
 	recipe.Keywords = append(recipe.Keywords, keywords...)
 
 	var imageName string
