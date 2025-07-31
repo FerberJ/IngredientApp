@@ -2,13 +2,24 @@ package components
 
 import "strings"
 
-templ Header(user string, authenticated bool) {
+templ Header(user string, authenticated bool, page string, id string) {
 	<div class="navbar bg-base-100 shadow-sm bg-primary">
 		<div class="navbar-start">
-			<button class="btn btn-ghost" hx-get={ "/redirect/home" } hx-swap="none">
+		{{ redirect := "" }}
+			switch page {
+				case "recipe":
+					{{ redirect = "/redirect/home"}}
+				case "createRecipe":
+					{{ redirect = "/redirect/home"}}
+				case "editRecipe":
+					{{ redirect = "/redirect/recipe/" + id}}
+			}
+			if redirect != "" {
+			<button class="btn btn-ghost" hx-get={ redirect } hx-swap="none">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path></svg>
 				Back
 			</button>
+			}
 			<a class="text-xl hidden sm:block lg:hidden text-primary-content">🥙 Ingredients App</a>
 		</div>
 		<div class="navbar-center">

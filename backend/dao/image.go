@@ -11,6 +11,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -101,6 +102,17 @@ func AddImageFromURL(imageURL string) (string, error) {
 	}
 
 	return newFilename, nil
+}
+
+func GetImageTTL(filename string) (*url.URL, error) {
+	p := db.GetMinioProvider()
+	return p.Client.PresignedGetObject(
+		context.Background(),
+		"images",
+		filename,
+		time.Minute*5, // TTL: 5 Minutes
+		nil,
+	)
 }
 
 func GetImage(filename string, userId string) (io.Reader, error) {

@@ -88,10 +88,8 @@ func main() {
 	router.Put("/recipe/{id}", handlers.HandleEditRecipe)
 	router.Delete("/recipe/{id}", handlers.HandleDeleteRecipe)
 
+	router.Post("/recipe/bring/{id}", handlers.HandlePrepareBringRequest)
 	router.Get("/recipe/bring/{id}", handlers.HandleBringRequest)
-
-	// listenAddr := os.Getenv("LISTEN_ADDR")
-	// slog.Info("HTTP server started", "listenAddr", listenAddr)
 
 	http.ListenAndServe(":3000", router)
 }

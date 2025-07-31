@@ -5,9 +5,11 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"gotth/template/backend/db"
+	"gotth/template/backend/models"
 	"net/http"
 	"time"
 
@@ -186,8 +188,40 @@ func (s Store) GetValue(key string, w http.ResponseWriter, r *http.Request) (int
 	return value, nil
 }
 
-// Helper methods
+func (s Store) AddTempRecipe(uuid string, recipe models.Recipe) error {
+	recipeByte, err := json.Marshal(recipe)
+	if err != nil {
+		return err
+	}
+	// s.provider.DB
+	err = s.provider.DB.Update(func(txn *badger.Txn) error {
+		entry := badger.NewEntry([]byte("recipe:"+uuid), recipeByte).WithTTL(time.Minute * 5)
+		return txn.SetEntry(entry)
+	})
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+func (s Store) GetTempRecipe(uuid string) (models.Recipe, error) {
+	var recipe models.Recipe
+	err := s.provider.DB.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte("recipe:" + uuid))
+		if err != nil {
+			return err
+		}
+
+		return item.Value(func(val []byte) error {
+			return json.Unmarshal(val, &recipe)
+		})
+	})
+
+	return recipe, err
+}
+
+// Helper methods
 func (s Store) saveSession(session *sessions.Session, w http.ResponseWriter, r *http.Request) error {
 	// Serialize session data
 	var buf bytes.Buffer

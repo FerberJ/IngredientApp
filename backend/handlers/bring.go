@@ -1,19 +1,51 @@
 package handlers
 
 import (
+	"encoding/json"
 	"gotth/template/backend/dao"
+	"gotth/template/backend/store"
 	"gotth/template/view/components"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/google/uuid"
 )
+
+func HandlePrepareBringRequest(w http.ResponseWriter, r *http.Request) {
+	recipeID := chi.URLParam(r, "id")
+
+	recipe, err := dao.GetRecipe(w, r, recipeID, true)
+	if err != nil {
+		return
+	}
+
+	url, err := dao.GetImageTTL(recipe.Image)
+	if err != nil {
+		return
+	}
+
+	recipe.Image = url.String()
+
+	s := store.GetStore()
+
+	newId := uuid.NewString()
+
+	s.AddTempRecipe(newId, recipe)
+
+	returnValue := make(map[string]any)
+	returnValue["id"] = newId
+	returnValueByte, err := json.Marshal(returnValue)
+
+	w.Write(returnValueByte)
+}
 
 func HandleBringRequest(w http.ResponseWriter, r *http.Request) {
 	recipeID := chi.URLParam(r, "id")
 	servingSiceStr := r.URL.Query().Get("serving")
 
-	recipe, err := dao.GetRecipe(w, r, recipeID, true)
+	s := store.GetStore()
+	recipe, err := s.GetTempRecipe(recipeID)
 	if err != nil {
 		return
 	}
@@ -31,5 +63,5 @@ func HandleBringRequest(w http.ResponseWriter, r *http.Request) {
 
 	dao.GetServing(servingSice, &recipe)
 
-	components.BringRecipe(recipe.Name, recipe.Ingredients).Render(r.Context(), w)
+	components.BringRecipe(recipe).Render(r.Context(), w)
 }

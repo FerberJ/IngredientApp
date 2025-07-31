@@ -9,7 +9,7 @@ import (
 
 templ ListIndex(user string, authenticated bool) {
 	@layouts.Base() {
-		@components.Header(user, authenticated)
+		@components.Header(user, authenticated, "listRecipe", "")
 		<div hx-get="/recipes" hx-trigger="load" hx-swap="innerHTML" id="main">
 			<!--recipes-->
 		</div>
@@ -19,21 +19,21 @@ templ ListIndex(user string, authenticated bool) {
 
 templ RecipeIndex(user string, authenticated bool, recipe models.Recipe, serving uint, isUsers bool, cfg configuration.Configutration) {
 	@layouts.Base() {
-		@components.Header(user, authenticated)
+		@components.Header(user, authenticated, "recipe", recipe.ID)
 		@components.Recipe(recipe, serving, isUsers, cfg)
 	}
 }
 
 templ CreateRecipeIndex(user string, authenticated bool) {
 	@layouts.Base() {
-		@components.Header(user, authenticated)
+		@components.Header(user, authenticated, "createRecipe", "")
 		@components.AddRecipe(models.Recipe{}, false)
 	}
 }
 
 templ EditRecipeIndex(user string, authenticated bool, recipe models.Recipe) {
 	@layouts.Base() {
-		@components.Header(user, authenticated)
+		@components.Header(user, authenticated, "editRecipe", recipe.ID)
 		@components.AddRecipe(recipe, true)
 	}
 }

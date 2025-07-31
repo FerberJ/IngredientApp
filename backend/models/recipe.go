@@ -23,27 +23,6 @@ type RecipeCard struct {
 	Keywords       []string  `json:"keywords"`
 }
 
-/*
-func GetRecipeCardFilter() bson.M {
-	return bson.M{
-		"name":           1,
-		"description":    1,
-		"private":        1,
-		"image":          1,
-		"user":           1,
-		"recipeYield":    1,
-		"recipeCategory": 1,
-		"recipeCuisine":  1,
-		"prepTime":       1,
-		"cookTime":       1,
-		"totalTime":      1,
-		"cuisine":        1,
-		"createdAt":      1,
-		"keywords":       1,
-	}
-}
-*/
-
 // Recipe represents a cooking recipe with all the relevant properties from Schema.org.
 type Recipe struct {
 	ID                 string          `json:"_id,omitempty"`
@@ -103,6 +82,7 @@ type AggregateRating struct {
 	RatingCount int     `json:"ratingCount"`
 }
 
+/*
 type RecipeUpdate struct {
 	Name               string          `json:"name"`
 	Description        string          `json:"description"`
@@ -126,3 +106,4 @@ type RecipeUpdate struct {
 	RecipeInstructions []string        `json:"recipeInstructions"`
 	Tip                string          `json:"tip"`
 }
+*/

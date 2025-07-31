@@ -301,27 +301,7 @@ func HandleEditRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	recipe.Instructions = instructions
 
-	/*
-		recipe = models.Recipe{
-			Name:        title,
-			Description: description,
-			Private:     privateStr == "on",
-			PrepTime:    prepTime,
-			CookTime:    cookTime,
-			TotalTime:   totalTime,
-			Nutrition: models.NutritionInfo{
-				ServingSize: servings,
-			},
-			Ingredients:  ingredients,
-			Instructions: instructions,
-			Image:        imageName,
-			User:         user.Id,
-			UserName:     user.Name,
-			Keywords:     keywords,
-		}
-	*/
-
-	recipeUpdate := models.RecipeUpdate{
+	recipeUpdate := models.Recipe{
 		Name:               recipe.Name,
 		Description:        recipe.Description,
 		Image:              recipe.Image,

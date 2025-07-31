@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-templ BringRecipe(name string, ingredients []models.Ingredient) {
+templ BringRecipe(recipe models.Recipe) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -15,9 +15,15 @@ templ BringRecipe(name string, ingredients []models.Ingredient) {
 		</head>
 		<body>
 			<div itemtype="http://schema.org/Recipe">
-				<h1 itemprop="name">{ name }</h1>
+				<h1 itemprop="name">{ recipe.Name }</h1>
+				<img
+					itemprop="image"
+					src={ recipe.Image }
+					alt="Food"
+					id="food-image"
+				/>
 				<ul>
-					for _, item := range ingredients {
+					for _, item := range recipe.Ingredients {
 						<li>
 							<div itemprop="recipeIngredient" class="flex">
 								<div class="ml-2 font-semibold w-1/2">

@@ -13,12 +13,10 @@ require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/casdoor/casdoor-go-sdk v1.4.0
 	github.com/dgraph-io/badger/v4 v4.8.0
-	github.com/goforj/godump v1.0.5
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/sessions v1.4.0
 	github.com/minio/minio-go/v7 v7.0.87
 	github.com/ostafen/clover/v2 v2.0.0-alpha.3
-	go.mongodb.org/mongo-driver v1.17.2
 )
 
 require (
