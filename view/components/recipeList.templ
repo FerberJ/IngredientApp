@@ -5,17 +5,27 @@ import (
 	"gotth/template/backend/configuration"
 )
 
-templ RecipesList(recipes []models.RecipeCard, badgeFilter []string, cfg configuration.Configutration) {
-	<div class="min-h-10 flex items-center">
-		if len(badgeFilter) > 0 {
+templ RecipesList(recipes []models.RecipeCard, badgeFilter []string, searchFilter []string, cfg configuration.Configutration) {
+	if len(searchFilter) > 0 {
+		<div class="min-h-10 flex items-center">
 			<div>
-				@ClosableBadge("")
-				for _, filter := range badgeFilter {
-					@ClosableBadge(filter)
+				@ClosableBadge("", "secondary", "removesearchbadges")
+				for _, filter := range searchFilter {
+					@ClosableBadge(filter, "secondary", "removesearchbadges")
 				}
 			</div>
-		}
-	</div>
+		</div>
+	}
+	if len(badgeFilter) > 0 {
+		<div class="min-h-10 flex items-center">
+			<div>
+				@ClosableBadge("", "accent", "removelistbadges")
+				for _, filter := range badgeFilter {
+					@ClosableBadge(filter, "accent", "removelistbadges")
+				}
+			</div>
+		</div>
+	}
 	<div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 4xl:grid-cols-7 gap-4">
 		for _, item := range recipes {
 			<div class="card bg-base-100 shadow-sm m-2">

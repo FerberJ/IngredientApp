@@ -13,18 +13,34 @@ import (
 	"github.com/ostafen/clover/v2/query"
 )
 
-func ListRecipes(w http.ResponseWriter, r *http.Request) ([]models.RecipeCard, error) {
+func ListRecipes(w http.ResponseWriter, r *http.Request, badges []string, searches []string) ([]models.RecipeCard, error) {
 	var recipes []models.RecipeCard
 	var q *query.Query
+	var c query.Criteria
 
 	recipeRepository := repository.NewRecipeRepository(db.GetCloverProvider())
 
 	user, err := auth.GetUser(w, r)
 	if err != nil {
-		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("private").IsFalse())
+		c = query.Field("private").IsFalse()
 	} else {
-		q = query.NewQuery(recipeRepository.Collection).Where(query.Field("private").IsFalse().Or(query.Field("user").Eq(user.Id)))
+		c = query.Field("private").IsFalse().Or(query.Field("user").Eq(user.Id))
 	}
+
+	if len(badges) > 0 {
+		for _, badge := range badges {
+			c = c.And(query.Field("keywords").Contains(badge))
+		}
+	}
+
+	if len(searches) > 0 {
+		for _, search := range searches {
+			c = c.And(query.Field("name").Like(search).
+				Or((query.Field("description").Like(search))))
+		}
+	}
+
+	q = query.NewQuery(recipeRepository.Collection).Where(c)
 
 	res, err := recipeRepository.FindDocuments(q, nil)
 	if err != nil {

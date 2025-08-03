@@ -2,18 +2,9 @@ package components
 
 import "strings"
 
-templ Header(user string, authenticated bool, page string, id string) {
+templ Header(user string, authenticated bool, redirect string) {
 	<div class="navbar bg-base-100 shadow-sm bg-primary">
 		<div class="navbar-start">
-		{{ redirect := "" }}
-			switch page {
-				case "recipe":
-					{{ redirect = "/redirect/home"}}
-				case "createRecipe":
-					{{ redirect = "/redirect/home"}}
-				case "editRecipe":
-					{{ redirect = "/redirect/recipe/" + id}}
-			}
 			if redirect != "" {
 			<button class="btn btn-ghost" hx-get={ redirect } hx-swap="none">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path></svg>
@@ -26,7 +17,9 @@ templ Header(user string, authenticated bool, page string, id string) {
 			<a class="text-xl hidden lg:block text-primary-content">🥙 Ingredients App</a>
 		</div>
 		<div class="navbar-end">
-			<input type="text" placeholder="Search" class="input input-bordered w-48 ml-2 mr-2"/>
+			if redirect == "" {
+				<input type="text" placeholder="Search" class="input input-bordered w-48 ml-2 mr-2"  onkeyup="handleKeyUp(event)"/>
+			}
 			if !authenticated {
 				<a href="/login" class="btn">Login</a>
 			} else {
@@ -55,4 +48,20 @@ templ Header(user string, authenticated bool, page string, id string) {
 			}
 		</div>
 	</div>
+	<script>
+		function handleKeyUp(event) {
+			const value = event.target.value
+
+			if (event.key === 'Enter') {
+				console.log(value)
+
+				event.target.value = ''
+
+				htmx.ajax('PUT', `/addSearchValue/${encodeURIComponent(value)}`, {
+					target: '#main',
+					swap: 'innerHTML'
+				})
+			}
+		}
+	</script>
 }

@@ -90,7 +90,7 @@ templ AddRecipe(recipe models.Recipe, edit bool) {
 					</div>
 					<div id="addRecipeBadge">
 						for _, badge := range recipe.Keywords {
-							@ClosableBadge(badge)
+							@ClosableBadge(badge, "accent", "removelistbadges")
 						}
 					</div>
 				</fieldset>

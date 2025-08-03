@@ -52,6 +52,8 @@ func main() {
 	router.Get("/recipes", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleRecipes(w, r, cfg)
 	})
+
+	// Main page badges
 	router.Put("/addlistbadges/{keyword}", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleAddClosableBadge(w, r, cfg)
 	})
@@ -60,6 +62,17 @@ func main() {
 	})
 	router.Put("/removelistbadges", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleRemoveAllClosableBadge(w, r, cfg)
+	})
+
+	// Main page search
+	router.Put("/addSearchValue/{search}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleSearchRecipe(w, r, cfg)
+	})
+	router.Put("/removesearchbadges/{search}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRemoveClosableSearch(w, r, cfg)
+	})
+	router.Put("/removesearchbadges", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRemoveAllClosableSearch(w, r, cfg)
 	})
 
 	// Page for showing a single Recipe

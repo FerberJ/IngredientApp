@@ -10,6 +10,52 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func HandleSearchRecipe(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
+	var valSlice []string
+	s := store.GetStore()
+	search := chi.URLParam(r, "search")
+
+	val, err := s.GetValue("searchList", w, r)
+	if err == nil && val != nil {
+		valSlice = val.([]string)
+	}
+
+	if !slices.Contains(valSlice, search) {
+		valSlice = append(valSlice, search)
+		s.AddValue("searchList", valSlice, w, r)
+	}
+
+	HandleRecipes(w, r, cfg)
+}
+
+func HandleRemoveClosableSearch(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
+	var valSlice []string
+	s := store.GetStore()
+	search := chi.URLParam(r, "search")
+
+	val, err := s.GetValue("searchList", w, r)
+	if err == nil && val != nil {
+		valSlice = val.([]string)
+
+		valSlice = utils.RemoveString(valSlice, search)
+		s.AddValue("searchList", valSlice, w, r)
+	}
+
+	HandleRecipes(w, r, cfg)
+}
+
+func HandleRemoveAllClosableSearch(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
+	var valSlice []string = make([]string, 0)
+	s := store.GetStore()
+
+	val, err := s.GetValue("searchList", w, r)
+	if err == nil && val != nil {
+		s.AddValue("searchList", valSlice, w, r)
+	}
+
+	HandleRecipes(w, r, cfg)
+}
+
 func HandleAddClosableBadge(w http.ResponseWriter, r *http.Request, cfg configuration.Configutration) {
 	var valSlice []string
 	s := store.GetStore()
