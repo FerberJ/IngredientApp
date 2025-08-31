@@ -35,8 +35,9 @@ func ListRecipes(w http.ResponseWriter, r *http.Request, badges []string, search
 
 	if len(searches) > 0 {
 		for _, search := range searches {
-			c = c.And(query.Field("name").Like(search).
-				Or((query.Field("description").Like(search))))
+			pattern := `(?i)` + search
+			c = c.And(query.Field("name").Like(pattern).
+				Or((query.Field("description").Like(pattern))))
 		}
 	}
 
