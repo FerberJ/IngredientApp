@@ -1,6 +1,14 @@
 {
-    "name": "Recipe App",
-    "short_name": "Recipe",
-    "display": "standalone",
-    "orientation": "portrait"
+  "name": "Ingredients",
+  "short_name": "Ingredients",
+  "theme_color": "#2f1937",
+  "background_color": "#2f1937",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/public/icon.png?v=2",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
 }
