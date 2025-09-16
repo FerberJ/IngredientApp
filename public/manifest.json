@@ -1,0 +1,6 @@
+{
+    "name": "Recipe App",
+    "short_name": "Recipe",
+    "display": "standalone",
+    "orientation": "portrait"
+}
