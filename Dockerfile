@@ -1,5 +1,5 @@
-# Use Go 1.23 bookworm as base image
-FROM golang:1.23-bookworm AS base
+# Use Go 1.25 bookworm as base image
+FROM golang:1.25-bookworm AS base
 
 # Move to working directory /build
 WORKDIR /build
