@@ -53,8 +53,6 @@ templ Header(user string, authenticated bool, redirect string) {
 			const value = event.target.value
 
 			if (event.key === 'Enter') {
-				console.log(value)
-
 				event.target.value = ''
 
 				htmx.ajax('PUT', `/addSearchValue/${encodeURIComponent(value)}`, {

@@ -165,26 +165,23 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration
 	</style>
 	<script>
 		function openInBring(recipe, appAddress, serving) {
-    console.log(recipe, appAddress)
-    
-    fetch(appAddress + '/recipe/bring/' + recipe._id, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => {
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`)
-        }
-        return res.json()
-    }).then(data => {
-        console.log(data)
-        const url = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${appAddress}/recipe/bring/${data.id}&source=web&baseQuantity=${recipe.nutrition.servingSize}&requestedQuantity=${serving}`;
-        
-        // This will open the Bring app if installed, or fallback to browser
-        window.location.href = url;
-    })
-}
+			fetch(appAddress + '/recipe/bring/' + recipe._id, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(res => {
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`)
+				}
+				return res.json()
+			}).then(data => {
+				const url = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${appAddress}/recipe/bring/${data.id}&source=web&baseQuantity=${recipe.nutrition.servingSize}&requestedQuantity=${serving}`;
+				
+				// This will open the Bring app if installed, or fallback to browser
+				window.location.href = url;
+			})
+		}
 
 		function toggleSwap() {
 			value = document.querySelector('input[name="editButtons"]').checked
