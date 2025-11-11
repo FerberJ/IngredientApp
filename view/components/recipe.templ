@@ -167,9 +167,6 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration
 		function openInBring(recipe, appAddress, serving) {
     console.log(recipe, appAddress)
     
-    // Open window immediately while we still have user gesture
-    const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-    
     fetch(appAddress + '/recipe/bring/' + recipe._id, {
         method: 'POST',
         headers: {
@@ -177,7 +174,6 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration
         }
     }).then(res => {
         if (!res.ok) {
-            newWindow?.close(); // Close if error
             throw new Error(`HTTP error! status: ${res.status}`)
         }
         return res.json()
@@ -185,15 +181,8 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration
         console.log(data)
         const url = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${appAddress}/recipe/bring/${data.id}&source=web&baseQuantity=${recipe.nutrition.servingSize}&requestedQuantity=${serving}`;
         
-        if (newWindow) {
-            newWindow.location.href = url;
-        } else {
-            // Fallback if popup was blocked
-            window.location.href = url;
-        }
-    }).catch(err => {
-        console.error(err);
-        newWindow?.close();
+        // This will open the Bring app if installed, or fallback to browser
+        window.location.href = url;
     })
 }
 
