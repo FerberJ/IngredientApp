@@ -165,29 +165,37 @@ templ Recipe(recipe models.Recipe, serving uint, isUsers bool, cfg configuration
 	</style>
 	<script>
 		function openInBring(recipe, appAddress, serving) {
-			console.log(recipe, appAddress)
-			fetch(appAddress + '/recipe/bring/' + recipe._id, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).then(res => {
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`)
-				}
-				return res.json()
-			}).then(data => {
-				console.log(data)
-
-							const link = document.createElement('a');
-			link.href = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${appAddress}/recipe/bring/${data.id}&source=web&baseQuantity=${recipe.nutrition.servingSize}&requestedQuantity=${serving}`;
-			link.target = '_blank';
-			link.rel = 'noopener noreferrer'; // Security best practice
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-			})
-		}
+    console.log(recipe, appAddress)
+    
+    // Open window immediately while we still have user gesture
+    const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+    
+    fetch(appAddress + '/recipe/bring/' + recipe._id, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => {
+        if (!res.ok) {
+            newWindow?.close(); // Close if error
+            throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+    }).then(data => {
+        console.log(data)
+        const url = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${appAddress}/recipe/bring/${data.id}&source=web&baseQuantity=${recipe.nutrition.servingSize}&requestedQuantity=${serving}`;
+        
+        if (newWindow) {
+            newWindow.location.href = url;
+        } else {
+            // Fallback if popup was blocked
+            window.location.href = url;
+        }
+    }).catch(err => {
+        console.error(err);
+        newWindow?.close();
+    })
+}
 
 		function toggleSwap() {
 			value = document.querySelector('input[name="editButtons"]').checked
