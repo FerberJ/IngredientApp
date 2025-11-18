@@ -23,7 +23,7 @@ func HandleRecipes(w http.ResponseWriter, r *http.Request, cfg configuration.Con
 		selectedSearches = valS.([]string)
 	}
 
-	recipes, err := dao.ListRecipes(w, r, selectedBadges, selectedSearches)
+	recipes, err := dao.ListRecipes(w, r, selectedBadges, selectedSearches, false)
 	if err != nil {
 		return
 	}

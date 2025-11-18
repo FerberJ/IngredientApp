@@ -104,5 +104,7 @@ func main() {
 	router.Post("/recipe/bring/{id}", handlers.HandlePrepareBringRequest)
 	router.Get("/recipe/bring/{id}", handlers.HandleBringRequest)
 
+	router.Get("/recipes/export", handlers.Export)
+
 	http.ListenAndServe(":3000", router)
 }

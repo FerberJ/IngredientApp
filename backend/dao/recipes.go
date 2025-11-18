@@ -13,7 +13,7 @@ import (
 	"github.com/ostafen/clover/v2/query"
 )
 
-func ListRecipes(w http.ResponseWriter, r *http.Request, badges []string, searches []string) ([]models.RecipeCard, error) {
+func ListRecipes(w http.ResponseWriter, r *http.Request, badges []string, searches []string, isExport bool) ([]models.RecipeCard, error) {
 	var recipes []models.RecipeCard
 	var q *query.Query
 	var c query.Criteria
@@ -22,9 +22,18 @@ func ListRecipes(w http.ResponseWriter, r *http.Request, badges []string, search
 
 	user, err := auth.GetUser(w, r)
 	if err != nil {
+		if isExport {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Not Authorized"))
+			return recipes, err
+		}
 		c = query.Field("private").IsFalse()
 	} else {
-		c = query.Field("private").IsFalse().Or(query.Field("user").Eq(user.Id))
+		if isExport {
+			c = query.Field("user").Eq(user.Id)
+		} else {
+			c = query.Field("private").IsFalse().Or(query.Field("user").Eq(user.Id))
+		}
 	}
 
 	if len(badges) > 0 {
